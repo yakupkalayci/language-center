@@ -5,6 +5,7 @@ import { BrowserRouter } from "react-router";
 import Fonts from "./fonts/Fonts.jsx"
 import theme from "./theme/theme.js";
 import App from "./App.jsx";
+import '../public/icon-font/style.css';
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>

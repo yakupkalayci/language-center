@@ -16,7 +16,7 @@ const Fonts = () => (
           fontStyle: "normal",
           fontWeight: "400",
           fontDisplay: "swap",
-          src: "url('../../public/fonts/Work_Sans/static/WorkSans-Regular.ttf') format('truetype')",
+          src: "url('../../fonts/Work_Sans/static/WorkSans-Regular.ttf') format('truetype')",
         },
       ],
     }}
