@@ -6,7 +6,11 @@ function DefaultLayout({ children }) {
   return (
     <Flex flexDirection="column" justifyContent="space-between" minH="100vh">
       <Header />
-      <Box as="main" bgColor="#f7f7f7" flex="1 0 auto">
+      <Box
+        as="main"
+        bgColor="#F8F9FA"
+        flex="1 0 auto"
+      >
         {children}
       </Box>
       <Footer />
