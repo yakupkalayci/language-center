@@ -1,9 +1,11 @@
 import { Box, Flex, Text } from "@chakra-ui/react";
+import { NavLink } from "react-router";
 import WordList from "../list/WordList";
 
 function DashboardCard(props) {
   // destruct props
-  const { title, type } = props;
+  const { cardInfo } = props;
+  const { title, type, link } = cardInfo;
 
   const getIconName = () => {
     switch (type) {
@@ -12,10 +14,37 @@ function DashboardCard(props) {
       case "week":
         return "calendar-week";
       case "month":
-        return "calendar";
+        return "calendar-month";
       case "video":
         return "video-library";
     }
+  };
+
+  const getData = (type) => {
+    const data = {
+      headings: [
+        "Kelime",
+        "Açıklama",
+        "Telaffuz",
+      ],
+      body: [
+        {
+          data: [
+            "scholl",
+            "okul",
+            "",
+          ],
+        },
+        {
+          data: [
+            "money",
+            "para",
+            "",
+          ],
+        },
+      ],
+    };
+    return data;
   };
 
   return (
@@ -29,16 +58,35 @@ function DashboardCard(props) {
       }}
       transition="all 0.3s ease"
     >
-      <Flex marginBottom="16px" alignItems="center" gap="12px">
-        <Box
-          as="i"
-          className={`icon-${getIconName()}`}
-          color="base.black"
-          fontSize="24px"
-        />
-        <Text>{title}</Text>
+      <Flex
+        marginBottom="16px"
+        alignItems="center"
+        justifyContent="space-between"
+      >
+        <Flex alignItems="center" gap="12px">
+          <Box
+            as="i"
+            className={`icon-${getIconName()}`}
+            color="base.black"
+            fontSize="24px"
+          />
+          <Text fontWeight="700">{title}</Text>
+        </Flex>
+        <NavLink to={link}>
+          <Text
+            bgClip="text"
+            textFillColor="transparent"
+            bgGradient="linear-gradient(270deg, rgba(127,105,136,1) 0%, rgba(8,10,121,1) 120%)"
+            transition="all 0.3s ease"
+            _hover={{
+              transform: "translateY(-5px)",
+            }}
+          >
+            Sayfaya Git
+          </Text>
+        </NavLink>
       </Flex>
-      <WordList />
+      <WordList type={type} data={getData()} />
     </Box>
   );
 }

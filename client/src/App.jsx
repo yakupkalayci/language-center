@@ -14,7 +14,7 @@ function App() {
               key={index}
               path={route.path}
               element={
-                <Suspense fallback={<div>test</div>}>
+                <Suspense fallback={<div>Loading..</div>}>
                   <DefaultLayout>
                     <Component />
                   </DefaultLayout>

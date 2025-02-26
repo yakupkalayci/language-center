@@ -6,35 +6,31 @@ import {
   Th,
   Tbody,
   Td,
+  Text,
 } from "@chakra-ui/react";
 
-function WordList() {
+function WordList(props) {
+  // destruct props
+  const { type, data } = props;
+
   return (
-    <TableContainer>
+    <TableContainer bgColor="base.white" borderRadius="8px">
       <Table>
         <Thead>
           <Tr>
-            <Th>Kelime</Th>
-            <Th>Açıklama</Th>
-            <Th>Telaffuz</Th>
+            {data.headings.map((item) => (
+              <Th key={item}>{item}</Th>
+            ))}
           </Tr>
         </Thead>
         <Tbody>
-          <Tr>
-            <Td>Scholl</Td>
-            <Td>Okul</Td>
-            <Td>25.4</Td>
-          </Tr>
-          <Tr>
-            <Td>feet</Td>
-            <Td>centimetres (cm)</Td>
-            <Td>30.48</Td>
-          </Tr>
-          <Tr>
-            <Td>yards</Td>
-            <Td>metres (m)</Td>
-            <Td>0.91444</Td>
-          </Tr>
+          {data.body.map((item, index) => (
+            <Tr key={index}>
+              {item.data.map((text, index) => (
+                <Td key={index}>{text}</Td>
+              ))}
+            </Tr>
+          ))}
         </Tbody>
       </Table>
     </TableContainer>

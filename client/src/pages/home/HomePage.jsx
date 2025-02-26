@@ -7,21 +7,25 @@ function HomePage() {
       id: 0,
       type: "day",
       title: "Günün Kelimeleri",
+      link: "/gunun-kelimeleri",
     },
     {
       id: 1,
       type: "week",
       title: "Haftanın Kelimeleri",
+      link: "/haftanin-kelimeleri",
     },
     {
       id: 2,
       type: "month",
       title: "Ayın Kelimeleri",
+      link: "/ayin-kelimeleri",
     },
     {
       id: 3,
       type: "video",
       title: "Film Dizi Video Kelimeleri",
+      link: "/film-dizi-video-kelimeleri",
     },
   ];
 
@@ -41,7 +45,7 @@ function HomePage() {
                 : "24"
             }
           >
-            <DashboardCard title={card.title} type={card.type} />
+            <DashboardCard cardInfo={card} />
           </GridItem>
         ))}
       </Grid>

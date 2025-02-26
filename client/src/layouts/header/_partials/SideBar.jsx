@@ -24,8 +24,8 @@ function SideBar() {
     },
     {
       id: 2,
-      label: "Günün Kelimesi",
-      href: "/gunun-kelimesi",
+      label: "Günün Kelimeleri",
+      href: "/gunun-kelimeleri",
       icon: "library-books",
     },
     {
