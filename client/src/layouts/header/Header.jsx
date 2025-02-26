@@ -8,14 +8,23 @@ import {
   Button,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import Drawer from "../../components/drawer/Drawer";
 import SideBar from "./_partials/SideBar";
 
 function Header() {
-  const isLoggedIn = true;
+  const isLoggedIn = false;
   const { isOpen, onOpen, onClose } = useDisclosure();
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const navigteToLoginPage = () => {
+    navigate("/uyelik-islemleri", { state: { formType: 'login' } });
+  };
+
+  const navigteToRegisterPage = () => {
+    navigate("/uyelik-islemleri", { state: { formType: 'register' } });
+  };
 
   useEffect(() => {
     if (isOpen) {
@@ -77,8 +86,8 @@ function Header() {
           <>
             <Spacer />
             <ButtonGroup gap="2" display={isLoggedIn ? "none" : "block"}>
-              <Button variant="secondary">Sign Up</Button>
-              <Button variant="primary">Log in</Button>
+              <Button variant="secondary" onClick={navigteToRegisterPage}>Sign Up</Button>
+              <Button variant="primary" onClick={navigteToLoginPage}>Log in</Button>
             </ButtonGroup>
           </>
         )}
