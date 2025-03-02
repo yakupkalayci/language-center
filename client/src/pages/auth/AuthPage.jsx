@@ -1,6 +1,7 @@
 import { Container, Flex, Box, Heading, Text, Button } from "@chakra-ui/react";
 import { useLocation } from "react-router";
 import { useForm } from "react-hook-form";
+import useAuthStore from "../../store/auth/authStore";
 import FormItem from "../../components/form-elements/formItem";
 import Input from "../../components/form-elements/Input";
 import { FORM_RULES } from "../../common/constants/form/formRules";
@@ -8,6 +9,7 @@ import { FORM_RULES } from "../../common/constants/form/formRules";
 function AuthPage() {
   const location = useLocation();
   const formType = location.state?.formType || "login";
+  const {setUserData} = useAuthStore();
 
   const {
     register,
@@ -15,7 +17,14 @@ function AuthPage() {
     formState: { errors },
   } = useForm();
 
+  const login = () => {
+    setUserData('token');
+  }
+
   const onSubmit = (data) => {
+    if(formType === 'login') {
+      login();
+    } 
     console.log("Form Data:", data);
   };
 

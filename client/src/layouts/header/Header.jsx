@@ -9,21 +9,22 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { useLocation, useNavigate } from "react-router";
+import useAuthStore from "../../store/auth/authStore";
 import Drawer from "../../components/drawer/Drawer";
 import SideBar from "./_partials/SideBar";
 
 function Header() {
-  const isLoggedIn = false;
   const { isOpen, onOpen, onClose } = useDisclosure();
   const location = useLocation();
   const navigate = useNavigate();
+  const { userData } = useAuthStore();
 
   const navigteToLoginPage = () => {
-    navigate("/uyelik-islemleri", { state: { formType: 'login' } });
+    navigate("/uyelik-islemleri", { state: { formType: "login" } });
   };
 
   const navigteToRegisterPage = () => {
-    navigate("/uyelik-islemleri", { state: { formType: 'register' } });
+    navigate("/uyelik-islemleri", { state: { formType: "register" } });
   };
 
   useEffect(() => {
@@ -42,12 +43,12 @@ function Header() {
       <Flex
         align="center"
         position="relative"
-        direction={!isLoggedIn ? { base: "column", md: "row" } : "row"}
+        direction={!userData ? { base: "column", md: "row" } : "row"}
         justifyContent="space-between"
         padding={{ base: "16px", lg: "32px" }}
-        gap={!isLoggedIn ? { base: "12px", md: 0 } : "unset"}
+        gap={!userData ? { base: "12px", md: 0 } : "unset"}
       >
-        {isLoggedIn && (
+        {userData && (
           <Box
             as="i"
             className="icon-menu-toggle"
@@ -70,7 +71,7 @@ function Header() {
         >
           Language Center
         </Heading>
-        {isLoggedIn && (
+        {userData && (
           <Box
             as="i"
             className="icon-profile"
@@ -82,12 +83,16 @@ function Header() {
             }}
           />
         )}
-        {!isLoggedIn && (
+        {!userData && (
           <>
             <Spacer />
-            <ButtonGroup gap="2" display={isLoggedIn ? "none" : "block"}>
-              <Button variant="secondary" onClick={navigteToRegisterPage}>Sign Up</Button>
-              <Button variant="primary" onClick={navigteToLoginPage}>Log in</Button>
+            <ButtonGroup gap="2" display={userData ? "none" : "block"}>
+              <Button variant="secondary" onClick={navigteToRegisterPage}>
+                Sign Up
+              </Button>
+              <Button variant="primary" onClick={navigteToLoginPage}>
+                Log in
+              </Button>
             </ButtonGroup>
           </>
         )}
