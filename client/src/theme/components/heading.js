@@ -6,6 +6,7 @@ const pageTitle = defineStyle({
     base: "16px",
     lg: "36px",
   },
+  display: 'inline-block',
   bgClip: "text",
   textFillColor: "transparent",
   bgGradient:

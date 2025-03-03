@@ -1,4 +1,7 @@
 export const RULE_MESSAGES = {
+  TEXT: {
+    REQUIRED: "Zorunlu alan."
+  },
   EMAIL: {
     REQUIRED: "Lütfen e-posta adresinizi giriniz.",
     INVALID: "Geçersiz e-posta adresi",

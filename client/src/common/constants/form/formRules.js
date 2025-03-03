@@ -3,6 +3,9 @@ import { emailRegex } from "../regex/regex";
 import { passwordRegex } from "../regex/regex";
 
 export const FORM_RULES = {
+  TEXT: {
+    required: RULE_MESSAGES.TEXT.REQUIRED,
+  },
   EMAIL: {
     required: RULE_MESSAGES.EMAIL.REQUIRED,
     pattern: {

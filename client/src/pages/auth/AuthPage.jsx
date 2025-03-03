@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Container, Flex, Box, Heading, Text, Button } from "@chakra-ui/react";
 import { useLocation } from "react-router";
 import { useForm } from "react-hook-form";
@@ -15,6 +16,7 @@ function AuthPage() {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm();
 
   const login = () => {
@@ -27,6 +29,10 @@ function AuthPage() {
     } 
     console.log("Form Data:", data);
   };
+
+  useEffect(() => {
+    reset();
+  }, [formType, reset]);
 
   return (
     <Container>
@@ -54,7 +60,7 @@ function AuthPage() {
           <FormItem errors={errors} itemName="email">
             <Input
               name="email"
-              typ="email"
+              type="email"
               placeholder="E-posta Adresi"
               register={register}
               validationSchema={FORM_RULES.EMAIL}

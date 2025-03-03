@@ -6,7 +6,8 @@ import {
   Th,
   Tbody,
   Td,
-  Text,
+  Button,
+  Box,
 } from "@chakra-ui/react";
 
 function WordList(props) {
@@ -29,6 +30,26 @@ function WordList(props) {
               {item.data.map((text, index) => (
                 <Td key={index}>{text}</Td>
               ))}
+              {type === "page" && (
+                <Td>
+                  <Button marginRight="8px" bgColor="green.300">
+                    <Box
+                      as="i"
+                      className="icon-edit"
+                      color="base.white"
+                      fontSize="14px"
+                    />
+                  </Button>
+                  <Button bgColor="red">
+                    <Box
+                      as="i"
+                      className="icon-delete"
+                      color="base.white"
+                      fontSize="14px"
+                    />
+                  </Button>
+                </Td>
+              )}
             </Tr>
           ))}
         </Tbody>
