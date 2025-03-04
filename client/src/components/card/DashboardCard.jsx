@@ -20,32 +20,18 @@ function DashboardCard(props) {
     }
   };
 
-  const getData = (type) => {
-    const data = {
-      headings: [
-        "Kelime",
-        "Açıklama",
-        "Telaffuz",
-      ],
-      body: [
-        {
-          data: [
-            "scholl",
-            "okul",
-            "",
-          ],
-        },
-        {
-          data: [
-            "money",
-            "para",
-            "",
-          ],
-        },
-      ],
-    };
-    return data;
-  };
+  const headings = ["Kelime", "Açıklama", "Telaffuz"];
+
+  const data = [
+    {
+      id: "0",
+      data: ["scholl", "okul"],
+    },
+    {
+      id: "1",
+      data: ["money", "para"],
+    },
+  ];
 
   return (
     <Box
@@ -86,7 +72,7 @@ function DashboardCard(props) {
           </Text>
         </NavLink>
       </Flex>
-      <WordList type={type} data={getData()} />
+      <WordList type={type} data={data} headings={headings} />
     </Box>
   );
 }
