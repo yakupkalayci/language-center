@@ -6,6 +6,12 @@ function useWordListHandler(data) {
   const [editData, setEditData] = useState(null);
   const [modalType, setModalType] = useState("add");
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isOpenGameModal,
+    onOpen: onOpenGameModal,
+    onClose: onCloseGameModal,
+  } = useDisclosure();
+
   const openAddModal = () => {
     setModalType("add");
     onOpen();
@@ -61,6 +67,9 @@ function useWordListHandler(data) {
     modalType,
     isOpen,
     onClose,
+    isOpenGameModal,
+    onOpenGameModal,
+    onCloseGameModal,
   };
 }
 

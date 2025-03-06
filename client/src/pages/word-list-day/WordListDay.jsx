@@ -1,8 +1,9 @@
 import { Container } from "@chakra-ui/react";
 import useWordListHandler from "../../hooks/useWordListHandlers";
+import PageHeader from "../../components/header/PageHeader";
 import WordList from "../../components/list/WordList";
 import WordModal from "../../components/modal/WordModal";
-import PageHeader from "../../components/header/PageHeader";
+import GameModal from "../../components/modal/game-modal/GameModal";
 
 function WordListDay() {
   const headings = [
@@ -45,11 +46,18 @@ function WordListDay() {
     editData,
     onClose,
     isOpen,
-  } = useWordListHandler(data);
+    isOpenGameModal,
+    onOpenGameModal,
+    onCloseGameModal,
+  } = useWordListHandler(data);  
 
   return (
     <Container>
-      <PageHeader title="Günün Kelimeleri" openModal={openAddModal} />
+      <PageHeader
+        title="Günün Kelimeleri"
+        openModal={openAddModal}
+        openGameModal={onOpenGameModal}
+      />
       <WordList
         type="page"
         headings={headings}
@@ -66,6 +74,7 @@ function WordListDay() {
         modalType={modalType}
         editData={editData}
       />
+      <GameModal isOpen={isOpenGameModal} onClose={onCloseGameModal} />
     </Container>
   );
 }

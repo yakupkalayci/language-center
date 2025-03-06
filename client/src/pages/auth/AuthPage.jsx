@@ -10,7 +10,7 @@ import { FORM_RULES } from "../../common/constants/form/formRules";
 function AuthPage() {
   const location = useLocation();
   const formType = location.state?.formType || "login";
-  const {setUserData} = useAuthStore();
+  const { setUserData } = useAuthStore();
 
   const {
     register,
@@ -19,14 +19,48 @@ function AuthPage() {
     reset,
   } = useForm();
 
-  const login = () => {
-    setUserData('token');
-  }
+  const login = async (data) => {
+    const url = "http://localhost:3000/api/users/login";
+
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      if (!res.ok) {
+        throw new Error(`HTTP error! Status: ${res.status}`);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const handleRegister = async (data) => {
+    const url = "http://localhost:3000/api/users/register";
+
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      if (!res.ok) {
+        throw new Error(`HTTP error! Status: ${res.status}`);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
   const onSubmit = (data) => {
-    if(formType === 'login') {
-      login();
-    } 
+    if (formType === "login") {
+      login(data);
+    } else if (formType === "register") {
+      handleRegister(data);
+    }
     console.log("Form Data:", data);
   };
 
@@ -67,6 +101,30 @@ function AuthPage() {
               errors={errors}
             />
           </FormItem>
+          {formType === "register" && (
+            <>
+              <FormItem errors={errors} itemName="firstName">
+                <Input
+                  name="firstName"
+                  type="text"
+                  placeholder="İsim"
+                  register={register}
+                  validationSchema={FORM_RULES.TEXT}
+                  errors={errors}
+                />
+              </FormItem>
+              <FormItem errors={errors} itemName="lastName">
+                <Input
+                  name="lastName"
+                  type="text"
+                  placeholder="Soyisim"
+                  register={register}
+                  validationSchema={FORM_RULES.TEXT}
+                  errors={errors}
+                />
+              </FormItem>
+            </>
+          )}
           <FormItem errors={errors} itemName="password">
             <Input
               name="password"

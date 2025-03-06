@@ -14,7 +14,11 @@ function WordList(props) {
   const { type, headings, data, openModal, openDeleteModal } = props;
 
   return (
-    <TableContainer bgColor="base.white" borderRadius="8px">
+    <TableContainer
+      bgColor="base.white"
+      borderRadius="8px"
+      boxShadow={type === 'page' ? "rgba(149, 157, 165, 0.2) 0px 8px 24px" : 'none'}
+    >
       <Table>
         <Thead>
           <Tr>
