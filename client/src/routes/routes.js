@@ -5,6 +5,7 @@ const AuthPage = lazy(() => import("../pages/auth/AuthPage"));
 const WordListDay = lazy(() => import("../pages/word-list-day/WordListDay"));
 const WordListWeek = lazy(() => import("../pages/word-list-week/WordListWeek"));
 const WordListMonth = lazy(() => import("../pages/word-list-month/WordListMonth"));
+const ProfilePage = lazy(() => import("../pages/profile/ProfilePage"));
 
 export const routes = [
   {
@@ -36,5 +37,11 @@ export const routes = [
     exact: true,
     path: "/ayin-kelimeleri",
     component: WordListMonth,
+  },
+  {
+    title: "Profilim",
+    exact: true,
+    path: "/profilim",
+    component: ProfilePage,
   },
 ];

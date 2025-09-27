@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, forwardRef } from "react";
 import {
   Box,
   Flex,
@@ -7,6 +7,10 @@ import {
   ButtonGroup,
   Button,
   useDisclosure,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
 } from "@chakra-ui/react";
 import { useLocation, useNavigate } from "react-router";
 import useAuthStore from "../../store/auth/authStore";
@@ -17,7 +21,7 @@ function Header() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const location = useLocation();
   const navigate = useNavigate();
-  const { userData } = useAuthStore();
+  const { token } = useAuthStore();
 
   const navigteToLoginPage = () => {
     navigate("/uyelik-islemleri", { state: { formType: "login" } });
@@ -25,6 +29,10 @@ function Header() {
 
   const navigteToRegisterPage = () => {
     navigate("/uyelik-islemleri", { state: { formType: "register" } });
+  };
+
+  const navigteToProfilePage = () => {
+    navigate("/profilim");
   };
 
   useEffect(() => {
@@ -43,12 +51,12 @@ function Header() {
       <Flex
         align="center"
         position="relative"
-        direction={!userData ? { base: "column", md: "row" } : "row"}
+        direction={!token ? { base: "column", md: "row" } : "row"}
         justifyContent="space-between"
         padding={{ base: "16px", lg: "32px" }}
-        gap={!userData ? { base: "12px", md: 0 } : "unset"}
+        gap={!token ? { base: "12px", md: 0 } : "unset"}
       >
-        {userData && (
+        {token && (
           <Box
             as="i"
             className="icon-menu-toggle"
@@ -71,22 +79,26 @@ function Header() {
         >
           Language Center
         </Heading>
-        {userData && (
-          <Box
-            as="i"
-            className="icon-profile"
-            color="base.white"
-            fontSize="24px"
-            cursor="pointer"
-            _hover={{
-              color: "primary.gray",
-            }}
-          />
+        {token && (
+          <Menu autoSelect={false}>
+            <MenuButton
+              as={Box}
+              className="icon-profile"
+              color="base.white"
+              fontSize="24px"
+              cursor="pointer"
+              _hover={{ color: "primary.gray" }}
+            />
+            <MenuList >
+              <MenuItem onClick={navigteToProfilePage}>Profilim</MenuItem>
+              <MenuItem>Çıkış Yap</MenuItem>
+            </MenuList>
+          </Menu>
         )}
-        {!userData && (
+        {!token && (
           <>
             <Spacer />
-            <ButtonGroup gap="2" display={userData ? "none" : "block"}>
+            <ButtonGroup gap="2">
               <Button variant="secondary" onClick={navigteToRegisterPage}>
                 Sign Up
               </Button>

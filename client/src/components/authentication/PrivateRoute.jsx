@@ -5,23 +5,19 @@ import DefaultLayout from "../../layouts/DefaultLayout";
 import AuthPage from "../../pages/auth/AuthPage";
 
 function PrivateRoute({ component: Component, ...rest }) {
-  const { userData } = useAuthStore();
+  const { token } = useAuthStore();
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (location.pathname === "/uyelik-islemleri" && userData) {
+    if (location.pathname === "/uyelik-islemleri" && token) {
       navigate("/");
     }
-  }, [location, userData, navigate]);
+  }, [location, token, navigate]);
 
-  if (location.pathname === "/uyelik-islemleri" && userData) {
-    navigate("/");
-    return null;
-  }
   return (
     <DefaultLayout>
-      {userData ? <Component {...rest} /> : <AuthPage />}
+      {token ? <Component {...rest} /> : <AuthPage />}
     </DefaultLayout>
   );
 }

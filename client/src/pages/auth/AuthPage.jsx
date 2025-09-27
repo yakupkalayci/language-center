@@ -1,5 +1,14 @@
-import { useEffect } from "react";
-import { Container, Flex, Box, Heading, Text, Button } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
+import {
+  Container,
+  Flex,
+  Box,
+  Heading,
+  Text,
+  Button,
+  useToast,
+} from "@chakra-ui/react";
+import axios from "axios";
 import { useLocation } from "react-router";
 import { useForm } from "react-hook-form";
 import useAuthStore from "../../store/auth/authStore";
@@ -9,8 +18,14 @@ import { FORM_RULES } from "../../common/constants/form/formRules";
 
 function AuthPage() {
   const location = useLocation();
-  const formType = location.state?.formType || "login";
-  const { setUserData } = useAuthStore();
+  const { setToken, setUserData } = useAuthStore();
+  const [errorMessage, setErrorMessage] = useState({
+    title: "",
+    description: "",
+  });
+  const [formType, setFormType] = useState();
+
+  const toast = useToast();
 
   const {
     register,
@@ -19,17 +34,22 @@ function AuthPage() {
     reset,
   } = useForm();
 
-  const login = async (data) => {
+  const handleLogin = async (data) => {
     const url = "http://localhost:3000/api/users/login";
 
     try {
-      const res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-
-      if (!res.ok) {
+      const response = await axios.post(url, data);
+      const res = response.data;
+      if (res.status === "success") {
+        setToken(res.token);
+        setUserData(res.userData);
+      } else if (res.status === "error") {
+        res.error?.description
+          ? setErrorMessage({
+              title: res.error.title,
+              description: res.error.description,
+            })
+          : setErrorMessage(null);
         throw new Error(`HTTP error! Status: ${res.status}`);
       }
     } catch (error) {
@@ -40,33 +60,56 @@ function AuthPage() {
   const handleRegister = async (data) => {
     const url = "http://localhost:3000/api/users/register";
 
-    try {
-      const res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+    const response = await axios.post(url, data);
+    const res = await response.data;
 
-      if (!res.ok) {
-        throw new Error(`HTTP error! Status: ${res.status}`);
-      }
-    } catch (error) {
-      console.error("Error:", error);
+    if (res.status === "success") {
+      setFormType("login");
+      setErrorMessage(null);
+      delete data.password;
+      setUserData(data);
+    } else {
+      const errorDetails = res.error?.description
+        ? { title: res.error.title, description: res.error.description }
+        : { title: "Hata", description: "Bir hata oluştu." };
+
+      setErrorMessage(errorDetails);
+      throw errorDetails;
     }
   };
 
   const onSubmit = (data) => {
     if (formType === "login") {
-      login(data);
+      toast.promise(handleLogin(data), {
+        loading: {title: "Yükleniyor..", description: "Lütfen bekleyiniz"},
+        success: (res) => ({
+          title: res.data.title || "Giriş başarılı",
+          description: res.data.message || "Uygulamaya başarıyla giriş yaptınız.",
+        }),
+        error: (err) => ({
+          title: err.title || "Hata",
+          description: err.description || "Bir hata oluştu.",
+        }),
+      })
     } else if (formType === "register") {
-      handleRegister(data);
+      toast.promise(handleRegister(data), {
+        loading: { title: "Yükleniyor..", description: "Lütfen bekleyiniz" },
+        success: (res) => ({
+          title: res.data.title || "Kayıt başarılı",
+          description: res.data.message || "Giriş yapabilirsiniz",
+        }),
+        error: (err) => ({
+          title: err.title || "Hata",
+          description: err.description || "Bir hata oluştu.",
+        }),
+      });
     }
-    console.log("Form Data:", data);
   };
 
   useEffect(() => {
     reset();
-  }, [formType, reset]);
+    setFormType(location.state?.formType || "login");
+  }, [location.state?.formType, reset]);
 
   return (
     <Container>
@@ -90,7 +133,10 @@ function AuthPage() {
               : "Ücretsiz bir şekilde tüm özelliklerden yararlanabilmek için hesap oluştur!"}
           </Text>
         </Box>
-        <Box as="form" onSubmit={handleSubmit(onSubmit)}>
+        {errorMessage && (
+          <Text color="alert.danger">{errorMessage.description}</Text>
+        )}
+        <Box as="form" onSubmit={handleSubmit(onSubmit)} noValidate>
           <FormItem errors={errors} itemName="email">
             <Input
               name="email"

@@ -2,10 +2,10 @@ import { FormControl, FormErrorMessage, Text } from "@chakra-ui/react";
 
 function FormItem(props) {
   // destruct props
-  const { children, errors, itemName } = props;
+  const { children, errors, itemName, noMarginBottom } = props;
 
   return (
-    <FormControl isInvalid={errors?.[itemName]} mb={4}>
+    <FormControl isInvalid={errors?.[itemName]} mb={noMarginBottom ? 0 : 4}>
       {children}
       <FormErrorMessage marginTop="8px">
         {errors?.[itemName] && (
