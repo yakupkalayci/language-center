@@ -12,9 +12,9 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
-import FormItem from "../form-elements/FormItem";
-import Input from "../form-elements/Input";
-import { FORM_RULES } from "../../common/constants/form/formRules";
+import FormItem from "../../form-elements/FormItem";
+import Input from "../../form-elements/Input";
+import { FORM_RULES } from "../../../common/constants/form/formRules";
 
 function WordModal(props) {
   // destruct props

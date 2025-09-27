@@ -13,7 +13,10 @@ export const FORM_RULES = {
       message: RULE_MESSAGES.EMAIL.INVALID,
     },
   },
-  PASSWORD: {
+  PASSWORD_LOGIN: {
+    required: RULE_MESSAGES.PASSWORD.REQUIRED
+  },
+  PASSWORD_REGISTER: {
     required: RULE_MESSAGES.PASSWORD.REQUIRED,
     pattern: {
       value: passwordRegex,

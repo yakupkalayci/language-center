@@ -99,8 +99,8 @@ router.post("/login", limiter, async (req, res) => {
     if (!user) {
       throw new CustomError(
         Enum.HTTPS_CODES.OK,
-        "Bad Request.",
-        "Email or password wrong."
+        "Hatalı istek",
+        "Eposta veya parola hatalı."
       );
     }
     const isCorrectPassword = await bcrypt.compare(password, user.password);
@@ -108,8 +108,8 @@ router.post("/login", limiter, async (req, res) => {
     if (!isCorrectPassword) {
       throw new CustomError(
         Enum.HTTPS_CODES.OK,
-        "Bad Request.",
-        "Email or password wrong."
+        "Hatalı istek",
+        "Eposta veya parola hatalı."
       );
     }
 
@@ -127,7 +127,6 @@ router.post("/login", limiter, async (req, res) => {
       userData: userData,
     });
   } catch (err) {
-    console.log("TEST", err);
     if (!res.headersSent) {
       let errorResponse = Response.errorResponse(err);
       res.status(errorResponse.code).json(errorResponse);
@@ -142,8 +141,8 @@ router.put("/update/:id", limiter, auth.authenticate(), async (req, res) => {
     if (!email || !password || is.not.email(email) || checkPassword(password)) {
       throw new CustomError(
         Enum.HTTPS_CODES.BAD_REQUEST,
-        "Bad Request",
-        "Invalid email or password"
+        "Hatalı istek",
+        "Eposta veya parola hatalı."
       );
     }
     const updatedUser = await prisma.user.update({

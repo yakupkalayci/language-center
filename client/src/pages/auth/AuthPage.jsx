@@ -14,15 +14,12 @@ import { useForm } from "react-hook-form";
 import useAuthStore from "../../store/auth/authStore";
 import FormItem from "../../components/form-elements/formItem";
 import Input from "../../components/form-elements/Input";
+import { login, signup } from "../../services/auth";
 import { FORM_RULES } from "../../common/constants/form/formRules";
 
 function AuthPage() {
   const location = useLocation();
   const { setToken, setUserData } = useAuthStore();
-  const [errorMessage, setErrorMessage] = useState({
-    title: "",
-    description: "",
-  });
   const [formType, setFormType] = useState();
 
   const toast = useToast();
@@ -35,72 +32,68 @@ function AuthPage() {
   } = useForm();
 
   const handleLogin = async (data) => {
-    const url = "http://localhost:3000/api/users/login";
-
     try {
-      const response = await axios.post(url, data);
-      const res = response.data;
-      if (res.status === "success") {
-        setToken(res.token);
-        setUserData(res.userData);
-      } else if (res.status === "error") {
-        res.error?.description
-          ? setErrorMessage({
-              title: res.error.title,
-              description: res.error.description,
-            })
-          : setErrorMessage(null);
-        throw new Error(`HTTP error! Status: ${res.status}`);
-      }
-    } catch (error) {
-      console.error("Error:", error);
+    const response = await login(data);
+    const res = await response.data;
+
+    if(res.status === 'success') {
+      setToken(res.token);
+      setUserData(res.userData);
+    } else if(res.status === 'error') {      
+      const error = new Error(res.error.description);
+      error.title = res.error.title;
+      error.message = res.error.description;
+      throw error;
+    }
+    } catch(err) {      
+      console.log("Handle login error:", err);
+      throw err;
     }
   };
 
   const handleRegister = async (data) => {
-    const url = "http://localhost:3000/api/users/register";
-
-    const response = await axios.post(url, data);
-    const res = await response.data;
-
-    if (res.status === "success") {
-      setFormType("login");
-      setErrorMessage(null);
-      delete data.password;
-      setUserData(data);
-    } else {
-      const errorDetails = res.error?.description
-        ? { title: res.error.title, description: res.error.description }
-        : { title: "Hata", description: "Bir hata oluştu." };
-
-      setErrorMessage(errorDetails);
-      throw errorDetails;
+    try {
+      const response = await signup(data);
+      const res = await response.data;
+      if(res.status === 'success') {
+        setFormType("login");
+        delete data.password;
+        setUserData(data);
+      } else if(res.status === 'error') {
+        const error = new Error(res.error.description);
+        error.title = res.error.title;
+        error.message = res.error.description;
+        throw error;
+      }
+    } catch(err) {
+        console.log("Handle register error:", err);
+        throw err;
     }
   };
 
   const onSubmit = (data) => {
     if (formType === "login") {
       toast.promise(handleLogin(data), {
-        loading: {title: "Yükleniyor..", description: "Lütfen bekleyiniz"},
+        loading: {title: "Yükleniyor..", description: "İşleminiz gerçekleştiriliyor"},
         success: (res) => ({
-          title: res.data.title || "Giriş başarılı",
-          description: res.data.message || "Uygulamaya başarıyla giriş yaptınız.",
+          title: "Başarılı",
+          description: "Uygulamaya başarıyla giriş yaptın.",
         }),
         error: (err) => ({
           title: err.title || "Hata",
-          description: err.description || "Bir hata oluştu.",
+          description: err.message || "Bir hata oluştu.",
         }),
       })
     } else if (formType === "register") {
       toast.promise(handleRegister(data), {
-        loading: { title: "Yükleniyor..", description: "Lütfen bekleyiniz" },
+        loading: { title: "Yükleniyor..", description: "İşleminiz gerçekleştiriliyor" },
         success: (res) => ({
-          title: res.data.title || "Kayıt başarılı",
-          description: res.data.message || "Giriş yapabilirsiniz",
+          title: "Başarılı",
+          description: "Giriş yapabilirsin",
         }),
         error: (err) => ({
           title: err.title || "Hata",
-          description: err.description || "Bir hata oluştu.",
+          description: err.message || "Bir hata oluştu.",
         }),
       });
     }
@@ -129,13 +122,10 @@ function AuthPage() {
           </Heading>
           <Text>
             {formType === "login"
-              ? "Formu doldurarak hesabına giriş yapabilir ve uygulamayı kullanmaya başlayabilirsin"
+              ? "Formu doldurarak hesabına giriş yapabilir ve uygulamayı kullanmaya başlayabilirsin."
               : "Ücretsiz bir şekilde tüm özelliklerden yararlanabilmek için hesap oluştur!"}
           </Text>
         </Box>
-        {errorMessage && (
-          <Text color="alert.danger">{errorMessage.description}</Text>
-        )}
         <Box as="form" onSubmit={handleSubmit(onSubmit)} noValidate>
           <FormItem errors={errors} itemName="email">
             <Input
@@ -177,7 +167,7 @@ function AuthPage() {
               type="password"
               placeholder="Şifre"
               register={register}
-              validationSchema={FORM_RULES.PASSWORD}
+              validationSchema={formType === 'login' ? FORM_RULES.PASSWORD_LOGIN : FORM_RULES.PASSWORD_REGISTER}
               errors={errors}
             />
           </FormItem>

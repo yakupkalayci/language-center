@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { Routes, Route } from "react-router";
 import { routes } from "./routes/routes";
 import PrivateRoute from "./components/authentication/PrivateRoute";
+import InfoModal from "./components/modal/info-modal/InfoModal";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           );
         })}
       </Routes>
+      <InfoModal />
     </>
   );
 }

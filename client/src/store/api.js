@@ -1,13 +1,13 @@
 import axios from "axios";
 
 const baseApi = axios.create({
-  baseURL: process.env.API_URL,
+  baseURL: import.meta.env.VITE_API_URL,
   headers: { "Content-Type": "application/json" },
 });
 
-export const api = (method, url, params, contentType) => {
+export const api = async (method, url, params, contentType) => {
   try {
-    baseApi({
+    const response = await baseApi({
       method,
       url,
       data: method === "GET" ? undefined : params,
@@ -15,10 +15,13 @@ export const api = (method, url, params, contentType) => {
       headers: {
         "Content-Type": contentType ? contentType : "application/json",
         Culture: "Tr",
-        Authorization: `Basic ${
-          localStorage?.getItem("auth-store")?.state?.token || ""
-        }`,
+        Authorization: `Basic ${localStorage?.getItem("auth-store")?.state?.token || ""
+          }`,
       },
     });
-  } catch (err) {}
+    return response;
+  } catch (err) {
+    console.log("Axios error:", err);
+    throw err;
+  }
 };

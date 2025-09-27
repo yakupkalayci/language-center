@@ -1,7 +1,7 @@
 import { Container } from "@chakra-ui/react";
 import useWordListHandler from "../../hooks/useWordListHandlers";
 import WordList from "../../components/list/WordList";
-import WordModal from "../../components/modal/WordModal";
+import WordModal from "../../components/modal/word-modal/WordModal";
 import PageHeader from "../../components/header/PageHeader";
 
 function WordListMonth() {

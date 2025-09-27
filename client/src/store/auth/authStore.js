@@ -14,6 +14,8 @@ const useAuthStore = create(
             ...data,
           },
         })),
+        clearToken: () => set({token: ""}),
+        clearUser: () => set({userData: {}}),
     }),
     { name: "auth-store" }
   )

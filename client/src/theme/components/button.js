@@ -11,7 +11,12 @@ const secondary = defineStyle({
 });
 
 
+const primaryAlert = defineStyle({
+  bgColor: "primary.blue",
+  color: "base.white"
+})
+
 
 export const buttonTheme = defineStyleConfig({
-  variants: { primary, secondary },
+  variants: { primary, secondary, primaryAlert },
 });

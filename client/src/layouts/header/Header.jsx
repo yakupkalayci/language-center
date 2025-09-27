@@ -14,6 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { useLocation, useNavigate } from "react-router";
 import useAuthStore from "../../store/auth/authStore";
+import useModalStore from "../../store/modal/modalStore";
 import Drawer from "../../components/drawer/Drawer";
 import SideBar from "./_partials/SideBar";
 
@@ -21,7 +22,8 @@ function Header() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const location = useLocation();
   const navigate = useNavigate();
-  const { token } = useAuthStore();
+  const { token, clearUser, clearToken } = useAuthStore();
+  const { open, setStatus, setActions, close } = useModalStore();
 
   const navigteToLoginPage = () => {
     navigate("/uyelik-islemleri", { state: { formType: "login" } });
@@ -34,6 +36,27 @@ function Header() {
   const navigteToProfilePage = () => {
     navigate("/profilim");
   };
+
+  const logout = () => {
+    setStatus("info");
+    setActions([
+      {
+        label: "Evet",
+        variant: "primaryAlert",
+        onClick: () => {
+          clearUser();
+          clearToken();
+          navigate("/");
+          close();
+        }
+      },
+      {
+        label: "Hayır",
+        onClick: () => close(),
+      }
+    ])
+    open({ title: "Çıkış Yap", message: "Çıkış yapmak istediğine emin misin?" });
+  }
 
   useEffect(() => {
     if (isOpen) {
@@ -91,7 +114,7 @@ function Header() {
             />
             <MenuList >
               <MenuItem onClick={navigteToProfilePage}>Profilim</MenuItem>
-              <MenuItem>Çıkış Yap</MenuItem>
+              <MenuItem onClick={logout}>Çıkış Yap</MenuItem>
             </MenuList>
           </Menu>
         )}
@@ -100,10 +123,10 @@ function Header() {
             <Spacer />
             <ButtonGroup gap="2">
               <Button variant="secondary" onClick={navigteToRegisterPage}>
-                Sign Up
+                Üye Ol
               </Button>
               <Button variant="primary" onClick={navigteToLoginPage}>
-                Log in
+                Giriş Yap
               </Button>
             </ButtonGroup>
           </>
