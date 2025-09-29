@@ -7,6 +7,7 @@ export const colors = {
     alert: {
         success: '#62a66e',
         danger: '#f44336',
+        danger2: '#ba0d00',
         warning: '#e09636'
     },
     primary: {

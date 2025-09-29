@@ -8,7 +8,6 @@ import {
   Button,
   useToast,
 } from "@chakra-ui/react";
-import axios from "axios";
 import { useLocation } from "react-router";
 import { useForm } from "react-hook-form";
 import useAuthStore from "../../store/auth/authStore";

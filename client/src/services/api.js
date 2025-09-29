@@ -15,7 +15,7 @@ export const api = async (method, url, params, contentType) => {
       headers: {
         "Content-Type": contentType ? contentType : "application/json",
         Culture: "Tr",
-        Authorization: `Basic ${localStorage?.getItem("auth-store")?.state?.token || ""
+        Authorization: `Bearer ${JSON.parse(localStorage?.getItem("auth-store"))?.state?.token || ""
           }`,
       },
     });

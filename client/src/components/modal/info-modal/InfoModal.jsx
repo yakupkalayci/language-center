@@ -7,8 +7,8 @@ function InfoModal() {
 
     const renderActions = () => {
         if (!actions.length) return;
-        return actions.map(({ onClick, label, variant }) => {
-            return <Button onClick={onClick} width="100%" marginBottom="12px" borderRadius="20px" variant={variant}>{label}</Button>
+        return actions.map(({ onClick, label, variant }, index) => {
+            return <Button key={index} onClick={onClick} width="100%" marginBottom="12px" borderRadius="20px" variant={variant}>{label}</Button>
         })
     }
 

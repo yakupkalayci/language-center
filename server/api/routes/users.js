@@ -119,7 +119,7 @@ router.post("/login", limiter, async (req, res) => {
     };
 
     let token = jwt.encode(payload, config.JWT.SECRET);
-    const {id, password: _, ...userData} = user;
+    const {password: _, ...userData} = user;
 
     res.json({
       status: "success",
@@ -154,6 +154,23 @@ router.put("/update/:id", limiter, auth.authenticate(), async (req, res) => {
       updatedUser,
     });
   } catch (err) {
+    let errorResponse = Response.errorResponse(err);
+    res.status(errorResponse.code).json(errorResponse);
+  }
+});
+
+router.delete("/delete/:userId", limiter, auth.authenticate(), async (req, res) => {
+  try {
+    const userId = req.params.userId;    
+    await prisma.user.delete({
+      where: {
+        id: userId
+      }
+    });
+    
+    res.status(Enum.HTTPS_CODES.OK)
+    .json(Response.successResponse({title: "Hesap silindi", message: "Hesabınz başarıyla silindi."}));
+  } catch(err) {
     let errorResponse = Response.errorResponse(err);
     res.status(errorResponse.code).json(errorResponse);
   }

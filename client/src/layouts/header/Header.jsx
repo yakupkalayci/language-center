@@ -42,7 +42,7 @@ function Header() {
     setActions([
       {
         label: "Evet",
-        variant: "primaryAlert",
+        variant: "danger",
         onClick: () => {
           clearUser();
           clearToken();
