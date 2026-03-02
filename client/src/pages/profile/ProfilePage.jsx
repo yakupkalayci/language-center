@@ -3,10 +3,11 @@ import { Container, Box, Heading, Flex, Button, Text, useToast } from "@chakra-u
 import { useForm } from "react-hook-form";
 import useAuthStore from "../../store/auth/authStore";
 import FormItem from "../../components/form-elements/formItem";
+import Label from "../../components/form-elements/Label";
 import Input from "../../components/form-elements/Input";
 import { FORM_RULES } from "../../common/constants/form/formRules";
 import useModalStore from "../../store/modal/modalStore";
-import { deleteAccount } from "../../services/auth";
+import { updateAccountInfos, deleteAccount } from "../../services/auth";
 import { useNavigate } from 'react-router';
 
 function ProfilePage() {
@@ -14,7 +15,7 @@ function ProfilePage() {
   const [errorMessage, setErrorMessage] = useState();
 
   // stores
-  const { userData, clearToken, clearUser } = useAuthStore();
+  const { userData, clearToken, clearUser, setUserData } = useAuthStore();
   const { open, close, setActions } = useModalStore();
 
   // variables
@@ -25,8 +26,9 @@ function ProfilePage() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, dirtyFields, isDirty },
     reset,
+    getValues,
   } = useForm({ defaultValues: userData });
 
   const logout = () => {
@@ -81,7 +83,51 @@ function ProfilePage() {
     ]);
   }
 
-  const onSubmit = () => { };
+  const handleUpdateProfile = async (data) => {
+    try {
+      const response = await updateAccountInfos(data);
+      const res = await response.data;
+      return res;
+    } catch (err) {
+      console.log("Update account error", err);
+      throw err;
+    }
+  }
+
+  const onSubmit = async (data) => {
+    if(!isDirty) {
+      toast({
+        title: 'Değişiklik yapılmadı',
+        status: 'info'
+      });
+      return;
+    }
+
+    const allValues = getValues();
+    const changedData = {};
+
+    Object.keys(dirtyFields).forEach((field) => {
+      changedData[field] = allValues[field];
+    })
+
+    toast.promise(handleUpdateProfile(changedData), {
+      loading: {
+        title: "Yükleniyor",
+        description: "İşleminiz gerçekleştiriliyor"
+      },
+      success: (res) => {
+        setUserData(res.data.user);
+        return {
+          title: res?.data?.title || "Başarılı",
+          description: res?.data?.message || "Hesabınzı başarıyla güncellendi."
+        }
+      },
+      error: (err) => ({
+        title: err.title || "Hata",
+        description: err.message || "Bilinmeyen bir hata meydana geldi."
+      })
+    });
+  };
 
   return (
     <Container>
@@ -89,11 +135,9 @@ function ProfilePage() {
         direction="column"
         borderRadius="12px"
         bgColor="base.white"
-        w="fit-content"
         margin="0 auto"
         padding={{ base: "16px", md: "48px" }}
         gap="36px"
-        width="75%"
       >
         <Box textAlign="center">
           <Heading marginBottom="16px">Profili Düzenle</Heading>
@@ -105,9 +149,11 @@ function ProfilePage() {
           noValidate
           flexWrap="wrap"
           columnGap="16px"
+          w="100%"
         >
-          <Box width="calc(50% - 8px)">
+          <Box w={{base: '100%', md: 'calc(50% - 8px)'}}>
             <FormItem errors={errors} itemName="firstName">
+              <Label label="İsim" />
               <Input
                 name="firstName"
                 type="text"
@@ -118,8 +164,9 @@ function ProfilePage() {
               />
             </FormItem>
           </Box>
-          <Box width="calc(50% - 8px)">
+          <Box w={{base: '100%', md: 'calc(50% - 8px)'}}>
             <FormItem errors={errors} itemName="lastName" noMarginBottom>
+              <Label label="Soyisim" />
               <Input
                 name="lastName"
                 type="text"
@@ -132,6 +179,7 @@ function ProfilePage() {
           </Box>
           <Box width="100%">
             <FormItem errors={errors} itemName="email">
+              <Label label="E-posta Adresi" />
               <Input
                 name="email"
                 type="email"
@@ -142,25 +190,24 @@ function ProfilePage() {
               />
             </FormItem>
           </Box>
-          <Box marginTop="auto" marginBottom="auto" width="100%">
+          <Flex marginTop="auto" gap="24px" justifyContent="center" marginBottom="auto" width="100%">
             <Button
               type="submit"
               variant="primary"
-              w="100%"
+              w="fit-content"
+              disabled={!isDirty}
             >
               Güncelle
             </Button>
-          </Box>
-          <Box marginTop="16px" marginBottom="auto" width="100%">
             <Button
               type="button"
               variant="danger"
-              w="100%"
+              w="fit-content"
               onClick={showDeleteAccountModal}
             >
               Hesabı Sil
             </Button>
-          </Box>
+          </Flex>
         </Flex>
       </Flex>
     </Container>

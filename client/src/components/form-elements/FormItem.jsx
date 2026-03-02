@@ -5,7 +5,7 @@ function FormItem(props) {
   const { children, errors, itemName, noMarginBottom } = props;
 
   return (
-    <FormControl isInvalid={errors?.[itemName]} mb={noMarginBottom ? 0 : 4}>
+    <FormControl isInvalid={errors?.[itemName]} mb={{base: 4, md: noMarginBottom ? 0 : 4}}>
       {children}
       <FormErrorMessage marginTop="8px">
         {errors?.[itemName] && (

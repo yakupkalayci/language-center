@@ -14,3 +14,8 @@ export async function deleteAccount(userId) {
     const url = `${import.meta.env.VITE_DELETE_ACOOUNT_SERVICE}/${userId}`;
     return api('DELETE', url);
 }
+
+export async function updateAccountInfos(data) {
+    const url = import.meta.env.VITE_UPDATE_PROFILE_SERVICE;
+    return api('PUT', url, data)
+}

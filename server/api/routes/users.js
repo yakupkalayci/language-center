@@ -134,29 +134,82 @@ router.post("/login", limiter, async (req, res) => {
   }
 });
 
-router.put("/update/:id", limiter, auth.authenticate(), async (req, res) => {
+// router.put("/update/:id", limiter, auth.authenticate(), async (req, res) => {
+//   try {
+//     const userId = req.params.id;
+//     const { email, password } = req.body;
+//     if (!email || !password || is.not.email(email) || checkPassword(password)) {
+//       throw new CustomError(
+//         Enum.HTTPS_CODES.BAD_REQUEST,
+//         "Hatalı istek",
+//         "Eposta veya parola hatalı."
+//       );
+//     }
+//     const updatedUser = await prisma.user.update({
+//       where: { id: userId },
+//       data: req.body,
+//     });
+//     res.json({
+//       status: "success",
+//       updatedUser,
+//     });
+//   } catch (err) {
+//     let errorResponse = Response.errorResponse(err);
+//     res.status(errorResponse.code).json(errorResponse);
+//   }
+// });
+
+router.patch("/update-profile", limiter, auth.authenticate(), async (req, res) => {
   try {
-    const userId = req.params.id;
-    const { email, password } = req.body;
-    if (!email || !password || is.not.email(email) || checkPassword(password)) {
-      throw new CustomError(
-        Enum.HTTPS_CODES.BAD_REQUEST,
-        "Hatalı istek",
-        "Eposta veya parola hatalı."
-      );
+    const userId = req.user.id;
+    const { firstName, lastName, email } = req.body;
+    const updatedData = {};
+
+    if (email) {
+      if (is.not.email(email)) {
+        throw new CustomError(
+          Enum.HTTPS_CODES.BAD_REQUEST,
+          "Hatalı İstek",
+          "Geçersiz E-Posta Adresi"
+        );
+      }
+      const existingUser = await prisma.user.findUnique({
+        where: { email }
+      });
+
+      if (existingUser) {
+        throw new CustomError(
+          Enum.HTTPS_CODES.BAD_REQUEST,
+          "Hatalı İstek",
+          "Bu e-posta zaten kullanlıyor."
+        );
+      }
+      updatedData.email = email;
     }
+
+    if (firstName) updatedData.firstName = firstName;
+    if (lastName) updatedData.lastName = lastName;
+
     const updatedUser = await prisma.user.update({
       where: { id: userId },
-      data: req.body,
+      data: updatedData
     });
-    res.json({
-      status: "success",
-      updatedUser,
-    });
+
+    const {password, ...userData} = updatedUser;
+
+    res.json(Response.successResponse({
+      title: 'Profil Güncellendi',
+      message: 'Bilgileriniz başarıyla güncellendi.',
+      user: userData
+    }));
+
   } catch (err) {
-    let errorResponse = Response.errorResponse(err);
-    res.status(errorResponse.code).json(errorResponse);
+    if (!res.headersSent) {
+      let errorResponse = Response.errorResponse(err);
+      res.status(errorResponse.code).json(errorResponse);
+    }
   }
+
 });
 
 router.delete("/delete/:userId", limiter, auth.authenticate(), async (req, res) => {
