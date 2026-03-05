@@ -5,6 +5,7 @@ import useAuthStore from "../../store/auth/authStore";
 import FormItem from "../../components/form-elements/formItem";
 import Label from "../../components/form-elements/Label";
 import Input from "../../components/form-elements/Input";
+import ChangePasswordModal from "../../components/modal/change-password-modal/ChangePasswordModal";
 import { FORM_RULES } from "../../common/constants/form/formRules";
 import useModalStore from "../../store/modal/modalStore";
 import { updateAccountInfos, deleteAccount } from "../../services/auth";
@@ -13,6 +14,7 @@ import { useNavigate } from 'react-router';
 function ProfilePage() {
   // states
   const [errorMessage, setErrorMessage] = useState();
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 
   // stores
   const { userData, clearToken, clearUser, setUserData } = useAuthStore();
@@ -190,19 +192,37 @@ function ProfilePage() {
               />
             </FormItem>
           </Box>
-          <Flex marginTop="auto" gap="24px" justifyContent="center" marginBottom="auto" width="100%">
+          <Flex 
+            marginTop="auto" 
+            gap="24px" 
+            justifyContent="center" 
+            marginBottom="auto" 
+            width={{base: '100%', md: '50%'}} 
+            marginInline="auto" 
+            flexWrap="wrap"
+          >
             <Button
               type="submit"
               variant="primary"
-              w="fit-content"
+              w="100%"
               disabled={!isDirty}
             >
               Güncelle
             </Button>
             <Button
               type="button"
+              variant="secondary"
+              w={{base: '100%', md: "fit-content"}}
+              flex={{md: "0 1 46%"}}
+              onClick={() => setIsPasswordModalOpen(true)}
+            >
+              Şifre Değiştir
+            </Button>
+            <Button
+              type="button"
               variant="danger"
-              w="fit-content"
+              w={{base: '100%', md: "fit-content"}}
+              flex={{md: "0 1 46%"}}
               onClick={showDeleteAccountModal}
             >
               Hesabı Sil
@@ -210,6 +230,10 @@ function ProfilePage() {
           </Flex>
         </Flex>
       </Flex>
+      <ChangePasswordModal 
+        isOpen={isPasswordModalOpen}
+        onClose={() => setIsPasswordModalOpen(false)}
+      />
     </Container>
   );
 }

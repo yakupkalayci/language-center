@@ -229,4 +229,51 @@ router.delete("/delete/:userId", limiter, auth.authenticate(), async (req, res) 
   }
 });
 
+router.patch("/update-password", limiter, auth.authenticate(), async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) {
+      throw new CustomError(
+        Enum.HTTPS_CODES.BAD_REQUEST,
+        "Mevcut parola ve yeni parola zorunludur."
+      );
+    }
+
+    if (!checkPassword(newPassword)) {
+      throw new CustomError(
+        Enum.HTTPS_CODES.BAD_REQUEST,
+        "Yeni parola kriterlere uymuyor."
+      );
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId }
+    });
+
+    const isCorrectPassword = await bcrypt.compare(currentPassword, user.password);
+
+    if (!isCorrectPassword) {
+      throw new CustomError(
+        Enum.HTTPS_CODES.BAD_REQUEST,
+        "Mevcut parola yanlış."
+      );
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 8);
+    await prisma.user.update({
+      where: { id: userId },
+      data: { password: hashedPassword }
+    });
+
+    res.json(Response.successResponse({
+      title: "Parola Güncellendi",
+      message: "Parolanız başarıyla değiştirildi."
+    }));
+  } catch (err) {
+    const errorResponse = Response.errorResponse(err);
+    res.status(errorResponse.code).json(errorResponse);
+  }
+});
+
 module.exports = router;
