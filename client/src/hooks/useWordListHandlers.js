@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDisclosure } from "@chakra-ui/react";
+import { getWords, addWord } from "../services/word";
 
-function useWordListHandler(data) {
-  const [tableData, setTableData] = useState(data);
+function useWordListHandler() {
+  const [tableData, setTableData] = useState([]);
   const [editData, setEditData] = useState(null);
   const [modalType, setModalType] = useState("add");
+  const [isLoading, setIsLoading] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
     isOpen: isOpenGameModal,
@@ -29,6 +31,19 @@ function useWordListHandler(data) {
     onOpen();
   };
 
+  const handleGetWords = async () => {
+    try {
+      setIsLoading(true);
+      const res = await getWords();
+      const words = await res.data.data;
+      setTableData(words);
+    } catch(err) {
+      console.log("handleGetWords fetch error:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   const handleEditWord = (updatedWord, id) => {
     const newDataArr = Object.values(updatedWord);
     const updatedData = {
@@ -46,14 +61,26 @@ function useWordListHandler(data) {
     setTableData(newData);
   };
 
-  const handleSaveWord = (newWordData) => {
-    const data = Object.values(newWordData);
-    const newData = {
-      id: Date.now(),
-      data,
-    };
-    setTableData((prev) => [...prev, newData]);
+  const handleSaveWord = async (newWordData) => {
+    // const data = Object.values(newWordData);
+    // const newData = {
+    //   id: Date.now(),
+    //   data,
+    // };
+    // setTableData((prev) => [...prev, newData]);
+
+    try {
+      const res = await addWord(newWordData);
+      console.log("TST", res);
+      
+    } catch(err) {
+      console.log("handleSaveWord fetch error:", err);
+    }
   };
+
+  useEffect(() => {
+    handleGetWords();
+  }, []);
 
   return {
     tableData,

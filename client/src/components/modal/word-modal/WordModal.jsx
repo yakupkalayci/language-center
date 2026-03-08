@@ -29,10 +29,10 @@ function WordModal(props) {
   } = props;
   const defaultValues = {
     word: "",
-    wordType: "",
-    desc: "",
+    type: "",
+    description: "",
     examples: "",
-    similarWords: "",
+    synonyms: "",
     extraNotes: "",
   };
 
@@ -62,10 +62,10 @@ function WordModal(props) {
         const data = editData.data;
         reset({
           word: data[0] || "",
-          wordType: data[1] || "",
-          desc: data[2] || "",
+          type: data[1] || "",
+          description: data[2] || "",
           examples: data[3] || "",
-          similarWords: data[4] || "",
+          synonyms: data[4] || "",
           extraNotes: data[5] || "",
         });
       } else {
@@ -102,9 +102,9 @@ function WordModal(props) {
                     errors={errors}
                   />
                 </FormItem>
-                <FormItem errors={errors} itemName="wordType">
+                <FormItem errors={errors} itemName="type">
                   <Input
-                    name="wordType"
+                    name="type"
                     type="text"
                     register={register}
                     placeholder="Türü"
@@ -112,9 +112,9 @@ function WordModal(props) {
                     errors={errors}
                   />
                 </FormItem>
-                <FormItem errors={errors} itemName="desc">
+                <FormItem errors={errors} itemName="description">
                   <Input
-                    name="desc"
+                    name="description"
                     type="text"
                     register={register}
                     placeholder="Açıklama"
@@ -130,9 +130,9 @@ function WordModal(props) {
                     placeholder="Örnekler"
                   />
                 </FormItem>
-                <FormItem itemName="similarWords">
+                <FormItem itemName="synonyms">
                   <Input
-                    name="similarWords"
+                    name="synonyms"
                     type="text"
                     register={register}
                     placeholder="Benzer Kelimeler"

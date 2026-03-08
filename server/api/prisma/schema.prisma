@@ -19,4 +19,31 @@ model User {
   lastName String
   password String
   email String  @unique
+  words Word[]
+}
+
+
+model Word {
+  @@unique([word, userId])
+  id          String   @id @default(cuid())
+  word        String
+  type        WordType
+  description String
+  extraNotes  String?
+
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  examples    String
+  synonyms    String
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum WordType {
+  NOUN
+  VERB
+  ADJECTIVE
+  ADVERB
 }

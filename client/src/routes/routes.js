@@ -2,6 +2,7 @@ import { lazy } from "react";
 
 const HomePage = lazy(() => import("../pages/home/HomePage"));
 const AuthPage = lazy(() => import("../pages/auth/AuthPage"));
+const WordListPage = lazy(() => import("../pages/word-list/WordList"));
 const WordListDay = lazy(() => import("../pages/word-list-day/WordListDay"));
 const WordListWeek = lazy(() => import("../pages/word-list-week/WordListWeek"));
 const WordListMonth = lazy(() => import("../pages/word-list-month/WordListMonth"));
@@ -37,6 +38,12 @@ export const routes = [
     exact: true,
     path: "/ayin-kelimeleri",
     component: WordListMonth,
+  },
+  {
+    title: "Kelime Listesi",
+    exact: true,
+    path: "/kelime-listesi",
+    component: WordListPage,
   },
   {
     title: "Profilim",

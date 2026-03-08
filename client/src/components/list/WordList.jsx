@@ -13,6 +13,9 @@ function WordList(props) {
   // destruct props
   const { type, headings, data, openModal, openDeleteModal } = props;
 
+  console.log("TEST", data);
+  
+
   return (
     <TableContainer
       bgColor="base.white"
@@ -37,11 +40,36 @@ function WordList(props) {
           </Tr>
         </Thead>
         <Tbody>
-          {data?.map((item, index) => (
+          {data?.words?.map((item, index) => (
             <Tr key={index}>
-              {item.data.map((text, index) => (
-                <Td key={index}>{text}</Td>
-              ))}
+              <Td>
+                {item.word}
+              </Td>
+              {
+                type === 'page' && (
+                  <Td>
+                    {item.type}
+                  </Td>
+                )
+              }
+              <Td>
+                {item.description}
+              </Td>
+              {
+                type === 'page' && (
+                  <>
+                    <Td>
+                      {item.examples}
+                    </Td>
+                    <Td>
+                      {item.synonyms}
+                    </Td>
+                    <Td>
+                      {item.extraNotes}
+                    </Td>
+                  </>
+                )
+              }
               <Td textAlign="center">
                 <Box
                   as="i"
