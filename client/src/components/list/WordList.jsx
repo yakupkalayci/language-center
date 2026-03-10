@@ -7,14 +7,15 @@ import {
   Tbody,
   Td,
   Box,
+  Text
 } from "@chakra-ui/react";
+import Loader from "../common/Loader";
 
 function WordList(props) {
   // destruct props
-  const { type, headings, data, openModal, openDeleteModal } = props;
+  const { type, headings, data, openModal, openDeleteModal, loading, error } = props;
 
-  console.log("TEST", data);
-  
+
 
   return (
     <TableContainer
@@ -39,87 +40,101 @@ function WordList(props) {
             ))}
           </Tr>
         </Thead>
-        <Tbody>
-          {data?.words?.map((item, index) => (
-            <Tr key={index}>
-              <Td>
-                {item.word}
-              </Td>
-              {
-                type === 'page' && (
+        <Tbody position={"relative"}>
+          {
+            loading || error ? (
+              <Box h="200px" w="100%" textAlign={"center"}>
+                {
+                    <Box position={"absolute"} left={"50%"} top={"50%"} transform={"translate(-50%, -50%)"}>
+                      {
+                        loading ? <Loader /> : <Text color="alert.danger" fontWeight={"semibold"}>Bir Hata Oluştu.</Text>
+                      }
+                    </Box>
+                }
+              </Box>
+            ) : (
+              data?.words?.map((item, index) => (
+                <Tr key={index}>
                   <Td>
-                    {item.type}
+                    {item.word}
                   </Td>
-                )
-              }
-              <Td>
-                {item.description}
-              </Td>
-              {
-                type === 'page' && (
-                  <>
-                    <Td>
-                      {item.examples}
+                  {
+                    type === 'page' && (
+                      <Td>
+                        {item.type}
+                      </Td>
+                    )
+                  }
+                  <Td>
+                    {item.description}
+                  </Td>
+                  {
+                    type === 'page' && (
+                      <>
+                        <Td>
+                          {item.examples}
+                        </Td>
+                        <Td>
+                          {item.synonyms}
+                        </Td>
+                        <Td>
+                          {item.extraNotes}
+                        </Td>
+                      </>
+                    )
+                  }
+                  <Td textAlign="center">
+                    <Box
+                      as="i"
+                      className="icon-volume-up"
+                      cursor="pointer"
+                      fontWeight="600"
+                      fontSize="20px"
+                      color="#3898FF"
+                      display="inline-block"
+                      transition="all 0.1s ease"
+                      _hover={{
+                        transform: "scale(1.1)",
+                      }}
+                    />
+                  </Td>
+                  {type === "page" && (
+                    <Td textAlign="center">
+                      <Box
+                        as="i"
+                        className="icon-edit"
+                        color="#47A025"
+                        cursor="pointer"
+                        fontWeight="600"
+                        fontSize="20px"
+                        marginRight="16px"
+                        display="inline-block"
+                        transition="all 0.1s ease"
+                        _hover={{
+                          transform: "scale(1.1)",
+                        }}
+                        onClick={() => openModal(item)}
+                      />
+                      <Box
+                        as="i"
+                        className="icon-delete"
+                        color="#6B0504"
+                        fontSize="20px"
+                        display="inline-block"
+                        cursor="pointer"
+                        fontWeight="600"
+                        transition="all 0.1s ease"
+                        _hover={{
+                          transform: "scale(1.1)",
+                        }}
+                        onClick={() => openDeleteModal(item.id)}
+                      />
                     </Td>
-                    <Td>
-                      {item.synonyms}
-                    </Td>
-                    <Td>
-                      {item.extraNotes}
-                    </Td>
-                  </>
-                )
-              }
-              <Td textAlign="center">
-                <Box
-                  as="i"
-                  className="icon-volume-up"
-                  cursor="pointer"
-                  fontWeight="600"
-                  fontSize="20px"
-                  color="#3898FF"
-                  display="inline-block"
-                  transition="all 0.1s ease"
-                  _hover={{
-                    transform: "scale(1.1)",
-                  }}
-                />
-              </Td>
-              {type === "page" && (
-                <Td textAlign="center">
-                  <Box
-                    as="i"
-                    className="icon-edit"
-                    color="#47A025"
-                    cursor="pointer"
-                    fontWeight="600"
-                    fontSize="20px"
-                    marginRight="16px"
-                    display="inline-block"
-                    transition="all 0.1s ease"
-                    _hover={{
-                      transform: "scale(1.1)",
-                    }}
-                    onClick={() => openModal(item)}
-                  />
-                  <Box
-                    as="i"
-                    className="icon-delete"
-                    color="#6B0504"
-                    fontSize="20px"
-                    display="inline-block"
-                    cursor="pointer"
-                    fontWeight="600"
-                    transition="all 0.1s ease"
-                    _hover={{
-                      transform: "scale(1.1)",
-                    }}
-                    onClick={() => openDeleteModal(item.id)}
-                  />
-                </Td>
-              )}
-            </Tr>
-          ))}
+                  )}
+                </Tr>
+              ))
+            )
+          }
         </Tbody>
       </Table>
     </TableContainer>

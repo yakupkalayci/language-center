@@ -15,6 +15,7 @@ import { useForm } from "react-hook-form";
 import FormItem from "../../form-elements/FormItem";
 import Input from "../../form-elements/Input";
 import { FORM_RULES } from "../../../common/constants/form/formRules";
+import Loader from "../../common/Loader";
 
 function WordModal(props) {
   // destruct props
@@ -26,6 +27,7 @@ function WordModal(props) {
     editData,
     handleEditWord,
     handleDelete,
+    isActionLoading,
   } = props;
   const defaultValues = {
     word: "",
@@ -45,11 +47,11 @@ function WordModal(props) {
     defaultValues,
   });
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     if (modalType === "add") {
       handleSaveWord(data);
     } else if (modalType === "edit" && editData?.id) {
-      handleEditWord(data, editData.id);
+      await handleEditWord(data, editData.id);
     } else if (modalType === "delete" && editData) {
       handleDelete(editData);
     }
@@ -58,15 +60,15 @@ function WordModal(props) {
 
   useEffect(() => {
     if (isOpen) {
-      if (modalType === "edit" && editData?.data) {
-        const data = editData.data;
+      if (modalType === "edit" && editData) {
+        const data = editData;
         reset({
-          word: data[0] || "",
-          type: data[1] || "",
-          description: data[2] || "",
-          examples: data[3] || "",
-          synonyms: data[4] || "",
-          extraNotes: data[5] || "",
+          word: data["word"] || "",
+          type: data["type"] || "",
+          description: data["description"] || "",
+          examples: data["examples"] || "",
+          synonyms: data["synonyms"] || "",
+          extraNotes: data["extraNotes"] || "",
         });
       } else {
         reset(defaultValues);
@@ -150,12 +152,16 @@ function WordModal(props) {
             )}
             <Flex alignItems="center" justifyContent="flex-end" gap="12px">
               <Button onClick={onClose}>Vazgeç</Button>
-              <Button variant="primary" type="submit">
-                {modalType === "add"
-                  ? "Kaydet"
-                  : modalType === "delete"
-                  ? "Sil"
-                  : "Güncelle"}
+              <Button variant="primary" type="submit" disabled={isActionLoading} minW={"100px"}>
+                {
+                  isActionLoading ? (
+                    <Loader />
+                  ) : modalType === "add"
+                    ? "Kaydet"
+                    : modalType === "delete"
+                      ? "Sil"
+                      : "Güncelle"
+                }
               </Button>
             </Flex>
           </Box>

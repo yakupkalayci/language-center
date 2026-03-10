@@ -30,10 +30,10 @@ function WordListPage() {
         onClose,
         isOpen,
         onOpenGameModal,
+        isLoading,
+        error,
+        isActionLoading
     } = useWordListHandler();
-
-    console.log("ENS", tableData);
-    
 
     return (
         <Container>
@@ -48,6 +48,8 @@ function WordListPage() {
                 data={tableData}
                 openModal={openEditModal}
                 openDeleteModal={openDeleteModal}
+                loading={isLoading}
+                error={error}
             />
             <WordModal
                 onClose={onClose}
@@ -57,6 +59,7 @@ function WordListPage() {
                 handleDelete={handleDelete}
                 modalType={modalType}
                 editData={editData}
+                isActionLoading={isActionLoading}
             />
         </Container>
     )

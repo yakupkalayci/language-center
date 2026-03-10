@@ -58,4 +58,38 @@ router.post("/", limiter, auth.authenticate(), async (req, res) => {
   }
 });
 
+router.put("/:id", limiter, auth.authenticate(), async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const wordId = req.params.id;
+    const wordData = req.body;
+    const updatedWord = await prisma.word.update({
+      where: {userId, id:wordId},
+      data: wordData
+    });
+
+    res.json(Response.successResponse({
+      updatedWord
+    }));
+  } catch(err) {
+    const errorResponse = Response.errorResponse(err);
+    res.status(errorResponse.code).json(errorResponse);
+  }
+});
+
+router.delete("/:id", limiter, auth.authenticate(), async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const wordId = req.params.id;
+    await prisma.word.delete({
+      where: { userId, id: wordId },
+    });
+    res.status(Enum.HTTPS_CODES.OK)
+      .json(Response.successResponse({ title: "Kelime silindi", message: "Kelime başarıyla silindi." }));
+  } catch (err) {
+    const errorResponse = Response.errorResponse(err);
+    res.status(errorResponse.code).json(errorResponse);
+  }
+})
+
 module.exports = router;
