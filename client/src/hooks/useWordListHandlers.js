@@ -120,6 +120,10 @@ function useWordListHandler() {
     setPageIndex(page);
   }
 
+  const retry = () => {
+    handleGetWords();
+  }
+
   useEffect(() => {
     handleGetWords();
   }, [pageIndex, pageSize]);
@@ -144,7 +148,8 @@ function useWordListHandler() {
     isActionLoading,
     pageIndex,
     totalPages,
-    onPageChange
+    onPageChange,
+    retry
   };
 }
 

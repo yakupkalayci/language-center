@@ -21,12 +21,12 @@ function HomePage() {
       title: "Ayın Kelimeleri",
       link: "/ayin-kelimeleri",
     },
-    {
-      id: 3,
-      type: "video",
-      title: "Film Dizi Video Kelimeleri",
-      link: "/film-dizi-video-kelimeleri",
-    },
+    // {
+    //   id: 3,
+    //   type: "video",
+    //   title: "Film Dizi Video Kelimeleri",
+    //   link: "/film-dizi-video-kelimeleri",
+    // },
   ];
 
   return (

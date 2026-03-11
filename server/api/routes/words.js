@@ -26,17 +26,52 @@ router.get("/", limiter, auth.authenticate(), async (req, res) => {
     const userId = req.user.id;
     const page = Number(req.query.pageIndex) || 1;
     const pageSize = Number(req.query.pageSize) || 10;
+    const dateType = req.query.dateType;
 
     const skip = (page - 1) * pageSize;
 
+    let startDate;
+    let endDate;
+    if (dateType) {
+      if (dateType === 'today') {
+        startDate = new Date();
+        startDate.setHours(0, 0, 0, 0);
+      } else if (dateType === 'week') {
+        endDate = new Date();
+        endDate.setDate(endDate.getDate() - 7);
+        endDate.setHours(0, 0, 0, 0);
+
+        startDate = new Date();
+        startDate.setDate(startDate.getDate() - 1);
+        startDate.setHours(23, 59, 59, 999);
+      } else if (dateType === 'month') {
+        startDate = new Date();
+        startDate.setMonth(startDate.getMonth() - 1);
+        startDate.setHours(0, 0, 0, 0);
+
+        endDate = new Date();
+        endDate.setDate(endDate.getDate() - 7);
+        endDate.setHours(23, 59, 59, 999);
+      }
+    }
+
     const [words, total] = await Promise.all([
       prisma.word.findMany({
-        where: { userId },
-        skip,
+        where: startDate ? {
+          userId,
+          updatedAt: {
+            gte: startDate,
+            ...(endDate ? {lte: endDate} : {})
+          }
+        } : {
+          userId
+        },
+        skip: startDate ? 0 : skip,
         take: pageSize,
         orderBy: {
           updatedAt: 'desc'
-        }
+        },
+
       }),
       prisma.word.count({
         where: {userId}
@@ -113,6 +148,6 @@ router.delete("/:id", limiter, auth.authenticate(), async (req, res) => {
     const errorResponse = Response.errorResponse(err);
     res.status(errorResponse.code).json(errorResponse);
   }
-})
+});
 
 module.exports = router;

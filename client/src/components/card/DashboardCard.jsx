@@ -1,12 +1,20 @@
 import { Box, Flex, Text } from "@chakra-ui/react";
 import { NavLink } from "react-router";
 import WordList from "../list/WordList";
+import useDashboardCard from "../../hooks/useDashboardCards";
 
 function DashboardCard(props) {
   // destruct props
   const { cardInfo } = props;
   const { title, type, link } = cardInfo;
 
+  // variables
+  const headings = ["Kelime", "Açıklama", "Telaffuz"];
+
+  // hooks
+  const {isLoading, error, data, retry} = useDashboardCard(type);
+
+  // methods
   const getIconName = () => {
     switch (type) {
       case "day":
@@ -20,19 +28,6 @@ function DashboardCard(props) {
     }
   };
 
-  const headings = ["Kelime", "Açıklama", "Telaffuz"];
-
-  const data = [
-    {
-      id: "0",
-      data: ["scholl", "okul"],
-    },
-    {
-      id: "1",
-      data: ["money", "para"],
-    },
-  ];
-
   return (
     <Box
       padding="24px"
@@ -43,6 +38,7 @@ function DashboardCard(props) {
         boxShadow: "rgb(38, 57, 77) 0px 20px 30px -10px",
       }}
       transition="all 0.3s ease"
+      height={"100%"}
     >
       <Flex
         marginBottom="16px"
@@ -72,7 +68,7 @@ function DashboardCard(props) {
           </Text>
         </NavLink>
       </Flex>
-      <WordList type={type} data={data} headings={headings} />
+      <WordList type={type} data={data} headings={headings} loading={isLoading} error={error} retry={retry} />
     </Box>
   );
 }

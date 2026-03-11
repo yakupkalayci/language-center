@@ -35,7 +35,8 @@ function WordListPage() {
         isActionLoading,
         pageIndex,
         totalPages,
-        onPageChange
+        onPageChange,
+        retry
     } = useWordListHandler();
 
     return (
@@ -56,6 +57,7 @@ function WordListPage() {
                 pageIndex={pageIndex}
                 totalPages={totalPages}
                 onPageChange={onPageChange}
+                retry={retry}
             />
             <WordModal
                 onClose={onClose}
