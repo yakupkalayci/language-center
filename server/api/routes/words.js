@@ -24,12 +24,37 @@ const limiter = rateLimit({
 router.get("/", limiter, auth.authenticate(), async (req, res) => {
   try {
     const userId = req.user.id;
-    const words = await prisma.word.findMany({
-      where: { userId },
-    });
+    const page = Number(req.query.pageIndex) || 1;
+    const pageSize = Number(req.query.pageSize) || 10;
+
+    const skip = (page - 1) * pageSize;
+
+    const [words, total] = await Promise.all([
+      prisma.word.findMany({
+        where: { userId },
+        skip,
+        take: pageSize,
+        orderBy: {
+          updatedAt: 'desc'
+        }
+      }),
+      prisma.word.count({
+        where: {userId}
+      })
+    ]);
+
+    const totalPages = Math.ceil(total / pageSize);
 
     res.json(Response.successResponse({
-      words
+      words,
+      pagination: {
+        total,
+        page,
+        pageSize,
+        totalPages,
+        hasNext: page < totalPages,
+        hasPrev: page > 1
+      }
     }));
   } catch (err) {
     const errorResponse = Response.errorResponse(err);
@@ -41,8 +66,6 @@ router.post("/", limiter, auth.authenticate(), async (req, res) => {
   try {
     const userId = req.user.id;
     const data = { userId, ...req.body };
-    console.log("ENS", req.body);
-    console.log("ykp", data);
     
     await prisma.word.create({
       data

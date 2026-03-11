@@ -32,7 +32,10 @@ function WordListPage() {
         onOpenGameModal,
         isLoading,
         error,
-        isActionLoading
+        isActionLoading,
+        pageIndex,
+        totalPages,
+        onPageChange
     } = useWordListHandler();
 
     return (
@@ -50,6 +53,9 @@ function WordListPage() {
                 openDeleteModal={openDeleteModal}
                 loading={isLoading}
                 error={error}
+                pageIndex={pageIndex}
+                totalPages={totalPages}
+                onPageChange={onPageChange}
             />
             <WordModal
                 onClose={onClose}

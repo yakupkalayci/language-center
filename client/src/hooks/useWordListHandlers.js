@@ -17,6 +17,11 @@ function useWordListHandler() {
     onClose: onCloseGameModal,
   } = useDisclosure();
 
+  // pagination states
+  const [pageIndex, setPageIndex] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalPages, setTotalPages] = useState(0);
+
   const openAddModal = () => {
     setModalType("add");
     onOpen();
@@ -38,9 +43,11 @@ function useWordListHandler() {
     try {
       setIsLoading(true);
       setError(false);
-      const res = await getWords();
+      const res = await getWords(pageIndex, pageSize);
       const words = await res.data.data;
+      const pagination = res.data.data.pagination;
       setTableData(words);
+      setTotalPages(pagination.totalPages);
     } catch(err) {
       console.log("handleGetWords fetch error:", err);
       setError(true);
@@ -109,9 +116,13 @@ function useWordListHandler() {
     }
   };
 
+  const onPageChange = (page) => {
+    setPageIndex(page);
+  }
+
   useEffect(() => {
     handleGetWords();
-  }, []);
+  }, [pageIndex, pageSize]);
 
   return {
     tableData,
@@ -130,7 +141,10 @@ function useWordListHandler() {
     onCloseGameModal,
     isLoading,
     error,
-    isActionLoading
+    isActionLoading,
+    pageIndex,
+    totalPages,
+    onPageChange
   };
 }
 

@@ -1,8 +1,8 @@
 import { api } from "./api";
 import { ENDPOINTS } from "./constant";
 
-export async function getWords() {
-    const url = ENDPOINTS.WORDS.GETWORDLIST;
+export async function getWords(pageIndex, pageSize) {
+    const url = ENDPOINTS.WORDS.GETWORDLIST + `?pageIndex=${pageIndex}&pageSize=${pageSize}`;
     return api('GET', url);
 }
 
