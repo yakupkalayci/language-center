@@ -33,17 +33,17 @@ router.get("/", limiter, auth.authenticate(), async (req, res) => {
     let startDate;
     let endDate;
     if (dateType) {
-      if (dateType === 'today') {
+      if (dateType === 'day') {
         startDate = new Date();
         startDate.setHours(0, 0, 0, 0);
       } else if (dateType === 'week') {
-        endDate = new Date();
-        endDate.setDate(endDate.getDate() - 7);
-        endDate.setHours(0, 0, 0, 0);
-
         startDate = new Date();
-        startDate.setDate(startDate.getDate() - 1);
-        startDate.setHours(23, 59, 59, 999);
+        startDate.setDate(startDate.getDate() - 7);
+        startDate.setHours(0, 0, 0, 0);
+
+        endDate = new Date();
+        endDate.setDate(endDate.getDate() - 1);
+        endDate.setHours(23, 59, 59, 999);
       } else if (dateType === 'month') {
         startDate = new Date();
         startDate.setMonth(startDate.getMonth() - 1);
