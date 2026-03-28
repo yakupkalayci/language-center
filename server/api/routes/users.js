@@ -1,8 +1,8 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
 const is = require("is_js");
-const { PrismaClient } = require("@prisma/client");
 const config = require("../config");
+const prisma = require('../lib/prismaClient');
 const Enum = require("../config/Enum");
 const jwt = require("jwt-simple");
 const rateLimit = require("express-rate-limit");
@@ -11,15 +11,16 @@ const CustomError = require("../lib/Error");
 const auth = require("../lib/auth")();
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: "Too many requests from this IP, please try again later.",
-});
+const limiter = (max) => {
+  return rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: max ?? 100,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: "Too many requests from this IP, please try again later.",
+  });
+};
 
 const checkPassword = (password) => {
   const regex = Enum.PASS_REGEX;
@@ -27,7 +28,7 @@ const checkPassword = (password) => {
   return true;
 };
 
-router.post("/register", limiter, async (req, res) => {
+router.post("/register", limiter(10), async (req, res) => {
   try {
     let body = req.body;
     if (
@@ -39,7 +40,7 @@ router.post("/register", limiter, async (req, res) => {
       !body.lastName
     ) {
       throw new CustomError(
-        Enum.HTTPS_CODES.OK,
+        Enum.HTTPS_CODES.BAD_REQUEST,
         "Hata.",
         "Lütfen tüm alanları doldurunuz."
       );
@@ -47,7 +48,7 @@ router.post("/register", limiter, async (req, res) => {
 
     if (is.not.email(body.email)) {
       throw new CustomError(
-        Enum.HTTPS_CODES.OK,
+        Enum.HTTPS_CODES.BAD_REQUEST,
         "Hata.",
         "Geçersiz e-posta adresi."
       );
@@ -61,13 +62,13 @@ router.post("/register", limiter, async (req, res) => {
 
     if (isNotUniqueEmail) {
       throw new CustomError(
-        Enum.HTTPS_CODES.OK,
+        Enum.HTTPS_CODES.BAD_REQUEST,
         "Hata, Kullanıcı kayıtlı",
         "Lütfen başka bir e-posta adresi giriniz."
       );
     }
 
-    body.password = await bcrypt.hash(body.password, 8);
+  body.password = await bcrypt.hash(body.password, config.SECURITY.BCRYPT_SALT_ROUNDS);
 
     await prisma.user.create({
       data: body,
@@ -86,7 +87,7 @@ router.post("/register", limiter, async (req, res) => {
   }
 });
 
-router.post("/login", limiter, async (req, res) => {
+router.post("/login", limiter(10), async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -98,7 +99,7 @@ router.post("/login", limiter, async (req, res) => {
 
     if (!user) {
       throw new CustomError(
-        Enum.HTTPS_CODES.OK,
+        Enum.HTTPS_CODES.BAD_REQUEST,
         "Hatalı istek",
         "Eposta veya parola hatalı."
       );
@@ -107,7 +108,7 @@ router.post("/login", limiter, async (req, res) => {
 
     if (!isCorrectPassword) {
       throw new CustomError(
-        Enum.HTTPS_CODES.OK,
+        Enum.HTTPS_CODES.BAD_REQUEST,
         "Hatalı istek",
         "Eposta veya parola hatalı."
       );
@@ -115,7 +116,7 @@ router.post("/login", limiter, async (req, res) => {
 
     let payload = {
       id: user.id,
-      exp: parseInt(Date.now() / 1000) * config.JWT.EXPIRE_TIME,
+      exp: Math.floor(Date.now() / 1000) + config.JWT.EXPIRE_TIME,
     };
 
     let token = jwt.encode(payload, config.JWT.SECRET);
@@ -159,7 +160,7 @@ router.post("/login", limiter, async (req, res) => {
 //   }
 // });
 
-router.patch("/update-profile", limiter, auth.authenticate(), async (req, res) => {
+router.patch("/update-profile", limiter(), auth.authenticate(), async (req, res) => {
   try {
     const userId = req.user.id;
     const { firstName, lastName, email } = req.body;
@@ -212,7 +213,7 @@ router.patch("/update-profile", limiter, auth.authenticate(), async (req, res) =
 
 });
 
-router.delete("/delete/:userId", limiter, auth.authenticate(), async (req, res) => {
+router.delete("/delete/:userId", limiter(), auth.authenticate(), async (req, res) => {
   try {
     const userId = req.params.userId;    
     await prisma.user.delete({
@@ -229,7 +230,7 @@ router.delete("/delete/:userId", limiter, auth.authenticate(), async (req, res) 
   }
 });
 
-router.patch("/update-password", limiter, auth.authenticate(), async (req, res) => {
+router.patch("/update-password", limiter(), auth.authenticate(), async (req, res) => {
   try {
     const userId = req.user.id;
     const { currentPassword, newPassword } = req.body;
@@ -260,7 +261,7 @@ router.patch("/update-password", limiter, auth.authenticate(), async (req, res) 
       );
     }
 
-    const hashedPassword = await bcrypt.hash(newPassword, 8);
+  const hashedPassword = await bcrypt.hash(newPassword, config.SECURITY.BCRYPT_SALT_ROUNDS);
     await prisma.user.update({
       where: { id: userId },
       data: { password: hashedPassword }

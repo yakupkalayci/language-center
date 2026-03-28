@@ -1,11 +1,13 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+const defaultUser = { firstName: "", lastName: "", email: "" };
+
 const useAuthStore = create(
   persist(
     (set) => ({
       token: "",
-      userData: { firstName: "", lastName: "", email: ""},
+      userData: defaultUser,
       setToken: (data) => set({ token: data }),
       setUserData: (data) =>
         set((state) => ({
@@ -14,8 +16,9 @@ const useAuthStore = create(
             ...data,
           },
         })),
-        clearToken: () => set({token: ""}),
-        clearUser: () => set({userData: {}}),
+      clearToken: () => set({ token: "" }),
+      clearUser: () => set({ userData: defaultUser }),
+      logout: () => set({ token: "", userData: defaultUser }),
     }),
     { name: "auth-store" }
   )

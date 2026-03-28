@@ -1,7 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
 const is = require("is_js");
-const { PrismaClient } = require("@prisma/client");
+const prisma = require('../lib/prismaClient');
 const config = require("../config");
 const Enum = require("../config/Enum");
 const jwt = require("jwt-simple");
@@ -11,7 +11,6 @@ const CustomError = require("../lib/Error");
 const auth = require("../lib/auth")();
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,

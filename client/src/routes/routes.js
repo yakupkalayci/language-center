@@ -14,41 +14,48 @@ export const routes = [
     exact: true,
     path: "/uyelik-islemleri",
     component: AuthPage,
+    isPrivate: false
   },
   {
     title: "Anasayfa",
     exact: true,
     path: "/",
     component: HomePage,
+    isPrivate: true
   },
   {
     title: "Günün Kelimeleri",
     exact: true,
     path: "/gunun-kelimeleri",
     component: WordListDay,
+    isPrivate: true
   },
   {
     title: "Haftanın Kelimeleri",
     exact: true,
     path: "/haftanin-kelimeleri",
     component: WordListWeek,
+    isPrivate: true
   },
   {
     title: "Ayın Kelimeleri",
     exact: true,
     path: "/ayin-kelimeleri",
     component: WordListMonth,
+    isPrivate: true
   },
   {
     title: "Kelime Listesi",
     exact: true,
     path: "/kelime-listesi",
     component: WordListPage,
+    isPrivate: true
   },
   {
     title: "Profilim",
     exact: true,
     path: "/profilim",
     component: ProfilePage,
+    isPrivate: true
   },
 ];

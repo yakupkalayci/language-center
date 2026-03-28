@@ -5,6 +5,29 @@ const baseApi = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
+const getToken = () => {
+  try {
+    const raw = localStorage.getItem("auth-store");
+    if (!raw) return "";
+    const parsed = JSON.parse(raw);
+    return parsed?.state?.token || "";
+  } catch (e) {
+    return "";
+  }
+};
+
+// Request interceptor to attach token
+baseApi.interceptors.request.use((config) => {
+  const token = getToken();
+  if (token) {
+    config.headers = config.headers || {};
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  config.headers = config.headers || {};
+  config.headers.Culture = "Tr";
+  return config;
+});
+
 export const api = async (method, url, params, contentType) => {
   try {
     const response = await baseApi({
@@ -12,12 +35,7 @@ export const api = async (method, url, params, contentType) => {
       url,
       data: method === "GET" ? undefined : params,
       params: method === "GET" ? params : undefined,
-      headers: {
-        "Content-Type": contentType ? contentType : "application/json",
-        Culture: "Tr",
-        Authorization: `Bearer ${JSON.parse(localStorage?.getItem("auth-store"))?.state?.token || ""
-          }`,
-      },
+      headers: contentType ? { "Content-Type": contentType } : undefined,
     });
     return response;
   } catch (err) {

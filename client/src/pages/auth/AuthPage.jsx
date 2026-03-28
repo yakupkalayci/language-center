@@ -8,7 +8,7 @@ import {
   Button,
   useToast,
 } from "@chakra-ui/react";
-import { useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 import useAuthStore from "../../store/auth/authStore";
 import FormItem from "../../components/form-elements/formItem";
@@ -18,7 +18,8 @@ import { FORM_RULES } from "../../common/constants/form/formRules";
 
 function AuthPage() {
   const location = useLocation();
-  const { setToken, setUserData } = useAuthStore();
+  const navigate = useNavigate();
+  const { token, setToken, setUserData } = useAuthStore();
   const [formType, setFormType] = useState();
 
   const toast = useToast();
@@ -102,6 +103,13 @@ function AuthPage() {
     reset();
     setFormType(location.state?.formType || "login");
   }, [location.state?.formType, reset]);
+
+  useEffect(() => {
+    if(token) {
+      const from = location.state?.from || "/";
+      navigate(from, {replace: true});
+    }
+  }, [token]);
 
   return (
     <Container>

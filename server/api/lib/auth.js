@@ -1,11 +1,10 @@
 const passport = require("passport");
 const { ExtractJwt, Strategy } = require("passport-jwt");
 const config = require("../config");
-const { PrismaClient } = require("@prisma/client");
-
-const prisma = new PrismaClient();
+const prisma = require('./prismaClient');
 
 module.exports = function () {
+    console.log("TEST", config.JWT);
     let strategy = new Strategy(
         {
             secretOrKey: config.JWT.SECRET,

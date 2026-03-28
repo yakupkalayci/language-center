@@ -1,23 +1,19 @@
-import { useEffect } from "react";
 import useAuthStore from "../../store/auth/authStore";
-import { useLocation, useNavigate } from "react-router";
+import { useLocation, useNavigate, Navigate } from "react-router-dom";
 import DefaultLayout from "../../layouts/DefaultLayout";
-import AuthPage from "../../pages/auth/AuthPage";
 
-function PrivateRoute({ component: Component, ...rest }) {
+function PrivateRoute({ children }) {
   const { token } = useAuthStore();
   const location = useLocation();
-  const navigate = useNavigate();
 
-  useEffect(() => {
-    if (location.pathname === "/uyelik-islemleri" && token) {
-      navigate("/");
-    }
-  }, [location, token, navigate]);
+  if (!token) {
+    // Preserve where the user wanted to go
+    return <Navigate to="/uyelik-islemleri" state={{ from: location }} replace />;
+  }
 
   return (
     <DefaultLayout>
-      {token ? <Component {...rest} /> : <AuthPage />}
+      {children}
     </DefaultLayout>
   );
 }
