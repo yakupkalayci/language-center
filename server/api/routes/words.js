@@ -62,7 +62,7 @@ router.get("/", auth.authenticate(), async (req, res) => {
     const [words, total] = await Promise.all([
       prisma.word.findMany({
         where,
-        skip: startDate ? 0 : skip,
+        skip,
         take: pageSize,
         orderBy: {
           updatedAt: 'desc'
