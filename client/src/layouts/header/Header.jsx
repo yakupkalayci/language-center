@@ -12,7 +12,7 @@ import {
   MenuList,
   MenuItem,
 } from "@chakra-ui/react";
-import { useLocation, useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router-dom";
 import useAuthStore from "../../store/auth/authStore";
 import useModalStore from "../../store/modal/modalStore";
 import Drawer from "../../components/drawer/Drawer";
@@ -22,7 +22,7 @@ function Header() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const location = useLocation();
   const navigate = useNavigate();
-  const { token, clearUser, clearToken } = useAuthStore();
+  const { userData, clearUser, clearToken } = useAuthStore();
   const { open, setStatus, setActions, close } = useModalStore();
 
   const navigteToLoginPage = () => {
@@ -74,12 +74,12 @@ function Header() {
       <Flex
         align="center"
         position="relative"
-        direction={!token ? { base: "column", md: "row" } : "row"}
-        justifyContent="space-between"
-        padding={{ base: "16px", lg: "32px" }}
-        gap={!token ? { base: "12px", md: 0 } : "unset"}
+  direction={!userData || !userData.email ? { base: "column", md: "row" } : "row"}
+  justifyContent="space-between"
+  padding={{ base: "16px", lg: "32px" }}
+  gap={!userData || !userData.email ? { base: "12px", md: 0 } : "unset"}
       >
-        {token && (
+  {userData && userData.email && (
           <Box
             as="i"
             className="icon-menu-toggle"
@@ -102,7 +102,7 @@ function Header() {
         >
           Language Center
         </Heading>
-        {token && (
+  {userData && userData.email && (
           <Menu autoSelect={false}>
             <MenuButton
               as={Box}
@@ -118,7 +118,7 @@ function Header() {
             </MenuList>
           </Menu>
         )}
-        {!token && (
+  {!userData || !userData.email ? (
           <>
             <Spacer />
             <ButtonGroup gap="2">
@@ -130,7 +130,7 @@ function Header() {
               </Button>
             </ButtonGroup>
           </>
-        )}
+  ) : null}
       </Flex>
       <Drawer
         size={{ base: "full", md: "md" }}

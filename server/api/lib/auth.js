@@ -4,11 +4,18 @@ const config = require("../config");
 const prisma = require('./prismaClient');
 
 module.exports = function () {
-    console.log("TEST", config.JWT);
+    const cookieExtractor = function(req) {
+        let token = null;
+        if (req && req.cookies && req.cookies.access_token) {
+            token = req.cookies.access_token;
+        }
+        return token || ExtractJwt.fromAuthHeaderAsBearerToken()(req);
+    };
+
     let strategy = new Strategy(
         {
             secretOrKey: config.JWT.SECRET,
-            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+            jwtFromRequest: cookieExtractor,
         },
         async (payload, done) => {
             try {

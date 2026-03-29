@@ -25,3 +25,13 @@ export async function changePassword(data) {
     const url = ENDPOINTS.AUTH.CHANGE_PASSWORD;
     return api('PATCH', url, data)
 }
+
+export async function refreshToken() {
+    const url = ENDPOINTS.AUTH.REFRESH_TOKEN;
+    return api('POST', url);
+}
+
+export async function logout() {
+    const url = ENDPOINTS.AUTH.LOGOUT;
+    return api('POST', url);
+}

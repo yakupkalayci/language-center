@@ -3,10 +3,10 @@ import { useLocation, useNavigate, Navigate } from "react-router-dom";
 import DefaultLayout from "../../layouts/DefaultLayout";
 
 function PrivateRoute({ children }) {
-  const { token } = useAuthStore();
+  const { userData } = useAuthStore();
   const location = useLocation();
 
-  if (!token) {
+  if (!userData || !userData.email) {
     // Preserve where the user wanted to go
     return <Navigate to="/uyelik-islemleri" state={{ from: location }} replace />;
   }

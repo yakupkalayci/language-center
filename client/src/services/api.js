@@ -3,26 +3,11 @@ import axios from "axios";
 const baseApi = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   headers: { "Content-Type": "application/json" },
+  withCredentials: true,
 });
 
-const getToken = () => {
-  try {
-    const raw = localStorage.getItem("auth-store");
-    if (!raw) return "";
-    const parsed = JSON.parse(raw);
-    return parsed?.state?.token || "";
-  } catch (e) {
-    return "";
-  }
-};
-
-// Request interceptor to attach token
+// Attach common headers
 baseApi.interceptors.request.use((config) => {
-  const token = getToken();
-  if (token) {
-    config.headers = config.headers || {};
-    config.headers.Authorization = `Bearer ${token}`;
-  }
   config.headers = config.headers || {};
   config.headers.Culture = "Tr";
   return config;

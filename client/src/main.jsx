@@ -8,6 +8,7 @@ import theme from "./theme/theme.js";
 import App from "./App.jsx";
 import ErrorPage from "./pages/error/ErrorPage.jsx";
 import "../public/icon-font/style.css";
+import AuthInitializer from "./AuthInitializer";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -15,7 +16,9 @@ createRoot(document.getElementById("root")).render(
       <Fonts />
       <BrowserRouter>
         <ErrorBoundary FallbackComponent={ErrorPage}>
-          <App />
+          <AuthInitializer>
+            <App />
+          </AuthInitializer>
         </ErrorBoundary>
       </BrowserRouter>
     </ChakraProvider>

@@ -14,31 +14,32 @@ datasource db {
 }
 
 model User {
-  id    String     @id @default(cuid())
-  firstName  String
-  lastName String
-  password String
-  email String  @unique
-  words Word[]
+  id            String         @id @default(cuid())
+  firstName     String
+  lastName      String
+  password      String
+  email         String         @unique
+  words         Word[]
+  refreshTokens RefreshToken[]
 }
 
-
 model Word {
-  @@unique([word, userId])
   id          String   @id @default(cuid())
   word        String
   type        WordType
   description String
   extraNotes  String?
 
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  examples    String
-  synonyms    String
+  examples String
+  synonyms String
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([word, userId])
 }
 
 enum WordType {
@@ -46,4 +47,14 @@ enum WordType {
   VERB
   ADJECTIVE
   ADVERB
+}
+
+model RefreshToken {
+  id        String    @id @default(cuid())
+  token     String    @unique
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+  expiresAt DateTime?
+  revoked   Boolean   @default(false)
 }

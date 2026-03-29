@@ -8,18 +8,18 @@ import {
   Button,
   useToast,
 } from "@chakra-ui/react";
-import { useLocation, useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import useAuthStore from "../../store/auth/authStore";
 import FormItem from "../../components/form-elements/formItem";
 import Input from "../../components/form-elements/Input";
-import { login, signup } from "../../services/auth";
+import { login, signup, refreshToken } from "../../services/auth";
 import { FORM_RULES } from "../../common/constants/form/formRules";
 
 function AuthPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { token, setToken, setUserData } = useAuthStore();
+  const { token, userData, setUserData } = useAuthStore();
   const [formType, setFormType] = useState();
 
   const toast = useToast();
@@ -37,8 +37,11 @@ function AuthPage() {
     const res = await response.data;
 
     if(res.status === 'success') {
-      setToken(res.token);
-      setUserData(res.userData);
+  // server sets access_token cookie and refresh_token cookie; store only user data
+  setUserData(res.userData);
+  // navigate immediately (also handled by userData effect)
+  const from = location.state?.from || "/";
+  navigate(from, { replace: true });
     } else if(res.status === 'error') {      
       const error = new Error(res.error.description);
       error.title = res.error.title;
@@ -104,12 +107,15 @@ function AuthPage() {
     setFormType(location.state?.formType || "login");
   }, [location.state?.formType, reset]);
 
+  // session restoration is handled globally by AuthInitializer
+
   useEffect(() => {
-    if(token) {
+    // navigate when we have user data (cookie-based auth)
+    if (userData && userData.email) {
       const from = location.state?.from || "/";
-      navigate(from, {replace: true});
+      navigate(from, { replace: true });
     }
-  }, [token]);
+  }, [userData]);
 
   return (
     <Container>
