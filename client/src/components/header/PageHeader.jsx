@@ -1,7 +1,7 @@
 import { Flex, Heading, Button, Box } from "@chakra-ui/react";
 
 function PageHeader(props) {
-  const { title, openModal, openGameModal } = props;
+  const { title, openModal, openGameModal, pageType } = props;
 
   return (
     <Flex
@@ -34,20 +34,22 @@ function PageHeader(props) {
           />
           Eşleştirme Oyunu
         </Button>
-        <Button
-          variant="secondary"
-          onClick={openModal}
-          w={{ base: "100%", md: "fit-content" }}
-        >
-          <Box
-            as="i"
-            className="icon-plus"
-            color="base.white"
-            fontSize="14px"
-            marginRight="8px"
-          />
-          Kelime Ekle
-        </Button>
+        {(pageType === "day" || pageType === "allWords") && (
+          <Button
+            variant="secondary"
+            onClick={openModal}
+            w={{ base: "100%", md: "fit-content" }}
+          >
+            <Box
+              as="i"
+              className="icon-plus"
+              color="base.white"
+              fontSize="14px"
+              marginRight="8px"
+            />
+            Kelime Ekle
+          </Button>
+        )}
       </Flex>
     </Flex>
   );

@@ -2,7 +2,8 @@ import { api } from "./api";
 import { ENDPOINTS } from "./constant";
 
 export async function getWords(pageIndex, pageSize) {
-    const url = ENDPOINTS.WORDS.GETWORDLIST + `?pageIndex=${pageIndex}&pageSize=${pageSize}`;
+    const tzOffset = new Date().getTimezoneOffset();
+    const url = ENDPOINTS.WORDS.GETWORDLIST + `?pageIndex=${pageIndex}&pageSize=${pageSize}&tzOffset=${tzOffset}`;
     return api('GET', url);
 }
 
@@ -22,6 +23,7 @@ export async function deleteWord(id) {
 }
 
 export async function getWordByDateType(dateType, pageIndex, pageSize) {
-    const url = ENDPOINTS.WORDS.GETWORDLIST + `?dateType=${dateType}&pageIndex=${pageIndex}&pageSize=${pageSize}`;
+    const tzOffset = new Date().getTimezoneOffset();
+    const url = ENDPOINTS.WORDS.GETWORDLIST + `?dateType=${dateType}&pageIndex=${pageIndex}&pageSize=${pageSize}&tzOffset=${tzOffset}`;
     return api('GET', url);
 }

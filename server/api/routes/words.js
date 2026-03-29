@@ -1,26 +1,13 @@
 const express = require("express");
-const bcrypt = require("bcrypt");
-const is = require("is_js");
 const prisma = require('../lib/prismaClient');
-const config = require("../config");
 const Enum = require("../config/Enum");
-const jwt = require("jwt-simple");
-const rateLimit = require("express-rate-limit");
 const Response = require("../lib/Response");
 const CustomError = require("../lib/Error");
 const auth = require("../lib/auth")();
 
 const router = express.Router();
 
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: "Too many requests from this IP, please try again later.",
-});
-
-router.get("/", limiter, auth.authenticate(), async (req, res) => {
+router.get("/", auth.authenticate(), async (req, res) => {
   try {
     const userId = req.user.id;
     const page = Number(req.query.pageIndex) || 1;
@@ -29,42 +16,52 @@ router.get("/", limiter, auth.authenticate(), async (req, res) => {
 
     const skip = (page - 1) * pageSize;
 
+    // timezone-aware boundaries
+    // client can pass tzOffset in minutes (the value returned by new Date().getTimezoneOffset())
+    // example: for UTC+3 tzOffset === -180
+    const tzOffset = Number(req.query.tzOffset) || 0;
+    const tzMs = tzOffset * 60 * 1000;
+
     let startDate;
     let endDate;
     if (dateType) {
+      // compute client's local Y/M/D by shifting now by -tzOffset
+      const shiftedNow = new Date(Date.now() - tzMs);
+      const Y = shiftedNow.getUTCFullYear();
+      const M = shiftedNow.getUTCMonth();
+      const D = shiftedNow.getUTCDate();
+
       if (dateType === 'day') {
-        startDate = new Date();
-        startDate.setHours(0, 0, 0, 0);
+        // client's local midnight in UTC = Date.UTC(Y,M,D) + tzMs
+        const startEpoch = Date.UTC(Y, M, D) + tzMs;
+        startDate = new Date(startEpoch);
       } else if (dateType === 'week') {
-        startDate = new Date();
-        startDate.setDate(startDate.getDate() - 7);
-        startDate.setHours(0, 0, 0, 0);
-
-        endDate = new Date();
-        endDate.setDate(endDate.getDate() - 1);
-        endDate.setHours(23, 59, 59, 999);
+        // start = local date -7 days at local midnight, end = local date -1 day end of day
+        const startEpoch = Date.UTC(Y, M, D - 7) + tzMs;
+        const endEpoch = Date.UTC(Y, M, D - 1) + tzMs + (24 * 60 * 60 * 1000 - 1);
+        startDate = new Date(startEpoch);
+        endDate = new Date(endEpoch);
       } else if (dateType === 'month') {
-        startDate = new Date();
-        startDate.setMonth(startDate.getMonth() - 1);
-        startDate.setHours(0, 0, 0, 0);
-
-        endDate = new Date();
-        endDate.setDate(endDate.getDate() - 7);
-        endDate.setHours(23, 59, 59, 999);
+        // start = same local day last month at local midnight, end = local date -7 days end of day
+        const startEpoch = Date.UTC(Y, M - 1, D) + tzMs;
+        const endEpoch = Date.UTC(Y, M, D - 7) + tzMs + (24 * 60 * 60 * 1000 - 1);
+        startDate = new Date(startEpoch);
+        endDate = new Date(endEpoch);
       }
     }
 
+    // shared where clause for both findMany and count
+    const where = startDate ? {
+      userId,
+      updatedAt: {
+        gte: startDate,
+        ...(endDate ? { lte: endDate } : {})
+      }
+    } : { userId };
+
     const [words, total] = await Promise.all([
       prisma.word.findMany({
-        where: startDate ? {
-          userId,
-          updatedAt: {
-            gte: startDate,
-            ...(endDate ? {lte: endDate} : {})
-          }
-        } : {
-          userId
-        },
+        where,
         skip: startDate ? 0 : skip,
         take: pageSize,
         orderBy: {
@@ -72,9 +69,7 @@ router.get("/", limiter, auth.authenticate(), async (req, res) => {
         },
 
       }),
-      prisma.word.count({
-        where: {userId}
-      })
+      prisma.word.count({ where })
     ]);
 
     const totalPages = Math.ceil(total / pageSize);
@@ -96,7 +91,7 @@ router.get("/", limiter, auth.authenticate(), async (req, res) => {
   }
 });
 
-router.post("/", limiter, auth.authenticate(), async (req, res) => {
+router.post("/", auth.authenticate(), async (req, res) => {
   try {
     const userId = req.user.id;
     const data = { userId, ...req.body };
@@ -115,7 +110,7 @@ router.post("/", limiter, auth.authenticate(), async (req, res) => {
   }
 });
 
-router.put("/:id", limiter, auth.authenticate(), async (req, res) => {
+router.put("/:id", auth.authenticate(), async (req, res) => {
   try {
     const userId = req.user.id;
     const wordId = req.params.id;
@@ -134,7 +129,7 @@ router.put("/:id", limiter, auth.authenticate(), async (req, res) => {
   }
 });
 
-router.delete("/:id", limiter, auth.authenticate(), async (req, res) => {
+router.delete("/:id", auth.authenticate(), async (req, res) => {
   try {
     const userId = req.user.id;
     const wordId = req.params.id;

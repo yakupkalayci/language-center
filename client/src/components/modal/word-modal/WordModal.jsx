@@ -12,8 +12,10 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
-import FormItem from "../../form-elements/FormItem";
+import FormItem from "../../form-elements/formItem";
 import Input from "../../form-elements/Input";
+import Select from "../../form-elements/Select";
+import { WORD_TYPES } from '../../../common/constants/wordTypes';
 import { FORM_RULES } from "../../../common/constants/form/formRules";
 import Loader from "../../common/Loader";
 
@@ -105,13 +107,13 @@ function WordModal(props) {
                   />
                 </FormItem>
                 <FormItem errors={errors} itemName="type">
-                  <Input
+                  <Select
                     name="type"
-                    type="text"
                     register={register}
-                    placeholder="Türü"
-                    validationSchema={FORM_RULES.TEXT}
+                    options={WORD_TYPES}
+                    placeholder="Türü seçin"
                     errors={errors}
+                    validationSchema={FORM_RULES.TYPE}
                   />
                 </FormItem>
                 <FormItem errors={errors} itemName="description">

@@ -6,18 +6,8 @@ import WordList from "../../components/list/WordList";
 import WordModal from "../../components/modal/word-modal/WordModal";
 
 function WordListPage() {
-    const headings = [
-        "Kelime",
-        "Türü",
-        "Açıklama",
-        "Örnekler",
-        "Benzer Kelimeler",
-        "Ekstra Notlar",
-        "Sesli Dinle",
-        "Aksiyonlar",
-    ];
-
     const {
+        headings,
         tableData,
         openAddModal,
         openEditModal,
@@ -42,9 +32,10 @@ function WordListPage() {
     return (
         <Container>
             <PageHeader
-                title="Günün Kelimeleri"
+                title="Tüm Kelimeler"
                 openModal={openAddModal}
                 openGameModal={onOpenGameModal}
+                pageType="allWords"
             />
             <WordList
                 type="page"

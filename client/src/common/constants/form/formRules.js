@@ -23,4 +23,7 @@ export const FORM_RULES = {
       message: RULE_MESSAGES.PASSWORD.INVALID,
     },
   },
+  TYPE: {
+    required: RULE_MESSAGES.TEXT.REQUIRED,
+  },
 };

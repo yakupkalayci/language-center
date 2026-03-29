@@ -57,7 +57,7 @@ function WordList(props) {
               loading || error || data?.words?.length === 0 ? (
                 <Box h="200px" w="100%" textAlign={"center"}>
                   {
-                    <Box position={"absolute"} left={"50%"} top={"50%"} transform={"translate(-50%, -50%)"}>
+                    <Box w={"100%"} position={"absolute"} left={"50%"} top={"50%"} transform={"translate(-50%, -50%)"}>
                       {
                         loading ? <Loader />
                           : data.words.length === 0 ? (

@@ -6,35 +6,9 @@ import WordModal from "../../components/modal/word-modal/WordModal";
 import GameModal from "../../components/modal/game-modal/GameModal";
 
 function WordListDay() {
-  const headings = [
-    "Kelime",
-    "Türü",
-    "Açıklama",
-    "Örnekler",
-    "Benzer Kelimeler",
-    "Ekstra Notlar",
-    "Sesli Dinle",
-    "Aksiyonlar",
-  ];
-  const data = [
-    {
-      id: "0",
-      data: ["scholl", "n", "okul", "he goes to hight scholl.", "", "college"],
-    },
-    {
-      id: "1",
-      data: [
-        "money",
-        "n",
-        "para",
-        "Happiness is not all about money.",
-        "",
-        "treasure",
-      ],
-    },
-  ];
 
   const {
+    headings,
     tableData,
     openAddModal,
     openEditModal,
@@ -49,7 +23,7 @@ function WordListDay() {
     isOpenGameModal,
     onOpenGameModal,
     onCloseGameModal,
-  } = useWordListHandler(data);  
+  } = useWordListHandler("day");  
 
   return (
     <Container>
@@ -57,6 +31,7 @@ function WordListDay() {
         title="Günün Kelimeleri"
         openModal={openAddModal}
         openGameModal={onOpenGameModal}
+        pageType="day"
       />
       <WordList
         type="page"

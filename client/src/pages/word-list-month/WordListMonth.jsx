@@ -5,34 +5,8 @@ import WordModal from "../../components/modal/word-modal/WordModal";
 import PageHeader from "../../components/header/PageHeader";
 
 function WordListMonth() {
-  const headings = [
-    "Kelime",
-    "Türü",
-    "Açıklama",
-    "Örnekler",
-    "Benzer Kelimeler",
-    "Ekstra Notlar",
-    "Sesli Dinle",
-    "Aksiyonlar",
-  ];
-  const data = [
-    {
-      id: "0",
-      data: ["scholl", "n", "okul", "he goes to hight scholl.", "", "college"],
-    },
-    {
-      id: "1",
-      data: [
-        "money",
-        "n",
-        "para",
-        "Happiness is not all about money.",
-        "",
-        "treasure",
-      ],
-    },
-  ];
   const {
+    headings,
     tableData,
     openAddModal,
     openEditModal,
@@ -44,16 +18,30 @@ function WordListMonth() {
     editData,
     onClose,
     isOpen,
-  } = useWordListHandler(data);
+    onOpenGameModal,
+    isLoading,
+    error,
+    isActionLoading,
+    pageIndex,
+    totalPages,
+    onPageChange,
+    retry
+  } = useWordListHandler("month");
   return (
     <Container>
-      <PageHeader title="Günün Kelimeleri" openModal={openAddModal} />
+      <PageHeader title="Ayın Kelimeleri" openModal={openAddModal} />
       <WordList
         type="page"
         headings={headings}
         data={tableData}
         openModal={openEditModal}
         openDeleteModal={openDeleteModal}
+        loading={isLoading}
+        error={error}
+        pageIndex={pageIndex}
+        totalPages={totalPages}
+        onPageChange={onPageChange}
+        retry={retry}
       />
       <WordModal
         onClose={onClose}
@@ -63,6 +51,7 @@ function WordListMonth() {
         handleDelete={handleDelete}
         modalType={modalType}
         editData={editData}
+        isActionLoading={isActionLoading}
       />
     </Container>
   );

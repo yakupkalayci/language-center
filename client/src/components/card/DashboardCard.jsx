@@ -2,6 +2,7 @@ import { Box, Flex, Text } from "@chakra-ui/react";
 import { NavLink } from "react-router";
 import WordList from "../list/WordList";
 import useDashboardCard from "../../hooks/useDashboardCards";
+import Icon from "../common/Icon";
 
 function DashboardCard(props) {
   // destruct props
@@ -55,17 +56,24 @@ function DashboardCard(props) {
           <Text fontWeight="700">{title}</Text>
         </Flex>
         <NavLink to={link}>
-          <Text
-            bgClip="text"
-            textFillColor="transparent"
-            bgGradient="linear-gradient(270deg, rgba(127,105,136,1) 0%, rgba(8,10,121,1) 120%)"
-            transition="all 0.3s ease"
+          <Flex
+            alignItems={"center"}
+            gap="8px"
             _hover={{
               transform: "translateY(-5px)",
             }}
+            transition="all 0.3s ease"
           >
-            Sayfaya Git
-          </Text>
+            <Text
+              bgClip="text"
+              textFillColor="transparent"
+              bgGradient="linear-gradient(270deg, rgba(127,105,136,1) 0%, rgba(8,10,121,1) 120%)"
+              display={{ base: "none", md: "block" }}
+            >
+              Sayfaya Git
+            </Text>
+            <Icon icon="arrow-right" size="24px" />
+          </Flex>
         </NavLink>
       </Flex>
       <WordList type={type} data={data} headings={headings} loading={isLoading} error={error} retry={retry} />

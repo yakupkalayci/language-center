@@ -1,4 +1,4 @@
-import { useEffect, forwardRef } from "react";
+import { useEffect } from "react";
 import {
   Box,
   Flex,
@@ -12,7 +12,7 @@ import {
   MenuList,
   MenuItem,
 } from "@chakra-ui/react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, NavLink } from "react-router-dom";
 import useAuthStore from "../../store/auth/authStore";
 import useModalStore from "../../store/modal/modalStore";
 import Drawer from "../../components/drawer/Drawer";
@@ -74,12 +74,12 @@ function Header() {
       <Flex
         align="center"
         position="relative"
-  direction={!userData || !userData.email ? { base: "column", md: "row" } : "row"}
-  justifyContent="space-between"
-  padding={{ base: "16px", lg: "32px" }}
-  gap={!userData || !userData.email ? { base: "12px", md: 0 } : "unset"}
+        direction={!userData || !userData.email ? { base: "column", md: "row" } : "row"}
+        justifyContent="space-between"
+        padding={{ base: "16px", lg: "32px" }}
+        gap={!userData || !userData.email ? { base: "12px", md: 0 } : "unset"}
       >
-  {userData && userData.email && (
+        {userData && userData.email && (
           <Box
             as="i"
             className="icon-menu-toggle"
@@ -92,17 +92,17 @@ function Header() {
             onClick={onOpen}
           />
         )}
-        <Heading
-          as="h1"
-          position={{ md: "absolute" }}
-          left="50%"
-          transform={{ md: "translateX(-50%)" }}
-          color="secondary.white"
-          fontSize={{ base: "24px", lg: "36px" }}
-        >
-          Language Center
-        </Heading>
-  {userData && userData.email && (
+          <Heading
+            as="h1"
+            position={{ md: "absolute" }}
+            left="50%"
+            transform={{ md: "translateX(-50%)" }}
+            color="secondary.white"
+            fontSize={{ base: "24px", lg: "36px" }}
+          >
+            <NavLink to={"/"}>Language Center</NavLink>
+          </Heading>
+        {userData && userData.email && (
           <Menu autoSelect={false}>
             <MenuButton
               as={Box}
@@ -118,7 +118,7 @@ function Header() {
             </MenuList>
           </Menu>
         )}
-  {!userData || !userData.email ? (
+        {!userData || !userData.email ? (
           <>
             <Spacer />
             <ButtonGroup gap="2">
@@ -130,7 +130,7 @@ function Header() {
               </Button>
             </ButtonGroup>
           </>
-  ) : null}
+        ) : null}
       </Flex>
       <Drawer
         size={{ base: "full", md: "md" }}

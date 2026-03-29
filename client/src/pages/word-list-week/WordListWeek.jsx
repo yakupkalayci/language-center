@@ -5,34 +5,8 @@ import WordModal from "../../components/modal/word-modal/WordModal";
 import PageHeader from "../../components/header/PageHeader";
 
 function WordListWeek() {
-  const headings = [
-    "Kelime",
-    "Türü",
-    "Açıklama",
-    "Örnekler",
-    "Benzer Kelimeler",
-    "Ekstra Notlar",
-    "Sesli Dinle",
-    "Aksiyonlar",
-  ];
-  const data = [
-    {
-      id: "0",
-      data: ["scholl", "n", "okul", "he goes to hight scholl.", "", "college"],
-    },
-    {
-      id: "1",
-      data: [
-        "money",
-        "n",
-        "para",
-        "Happiness is not all about money.",
-        "",
-        "treasure",
-      ],
-    },
-  ];
   const {
+    headings,
     tableData,
     openAddModal,
     openEditModal,
@@ -44,7 +18,7 @@ function WordListWeek() {
     editData,
     onClose,
     isOpen,
-  } = useWordListHandler(data);
+  } = useWordListHandler("week");
 
   return (
     <Container>

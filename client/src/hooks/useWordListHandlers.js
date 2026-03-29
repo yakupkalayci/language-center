@@ -1,8 +1,18 @@
 import { useState, useEffect } from "react";
 import { useDisclosure, useToast } from "@chakra-ui/react";
-import { getWords, addWord, updateWord, deleteWord } from "../services/word";
+import { getWordByDateType, addWord, updateWord, deleteWord } from "../services/word";
 
-function useWordListHandler() {
+function useWordListHandler(dateType) {
+  const headings = [
+    "Kelime",
+    "Türü",
+    "Açıklama",
+    "Örnekler",
+    "Benzer Kelimeler",
+    "Ekstra Notlar",
+    "Sesli Dinle",
+    "Aksiyonlar",
+  ];
   const toast = useToast();
   const [tableData, setTableData] = useState([]);
   const [editData, setEditData] = useState(null);
@@ -43,7 +53,7 @@ function useWordListHandler() {
     try {
       setIsLoading(true);
       setError(false);
-      const res = await getWords(pageIndex, pageSize);
+      const res = await getWordByDateType(dateType, pageIndex, pageSize);
       const words = await res.data.data;
       const pagination = res.data.data.pagination;
       setTableData(words);
@@ -129,6 +139,7 @@ function useWordListHandler() {
   }, [pageIndex, pageSize]);
 
   return {
+    headings,
     tableData,
     openAddModal,
     openEditModal,
