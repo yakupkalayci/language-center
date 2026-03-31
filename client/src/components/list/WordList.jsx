@@ -10,6 +10,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import Loader from "../common/Loader";
+import { speakText } from '../../utils/speech';
 import Pagination from "./Pagination";
 
 function WordList(props) {
@@ -113,6 +114,11 @@ function WordList(props) {
                         _hover={{
                           transform: "scale(1.1)",
                         }}
+                        role="button"
+                        tabIndex={0}
+                        aria-label={`Sesli oku: ${item.word}`}
+                        onClick={() => speakText(item.word).catch(() => {})}
+                        onKeyPress={(e) => { if (e.key === 'Enter' || e.key === ' ') speakText(item.word).catch(() => {}); }}
                       />
                     </Td>
                     {type === "page" && (
