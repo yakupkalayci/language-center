@@ -1,7 +1,7 @@
 import { Flex, Heading, Button, Box } from "@chakra-ui/react";
 
 function PageHeader(props) {
-  const { title, openModal, openGameModal, pageType } = props;
+  const { title, openModal, openGameModal, openAddMediaModal, pageType } = props;
 
   return (
     <Flex
@@ -20,20 +20,24 @@ function PageHeader(props) {
         marginBottom="16px"
         width={{ base: "100%", md: "unset" }}
       >
-        <Button
-          variant="primary"
-          onClick={() => openGameModal()}
-          w={{ base: "100%", md: "fit-content" }}
-        >
-          <Box
-            as="i"
-            className="icon-plus"
-            color="base.white"
-            fontSize="14px"
-            marginRight="8px"
-          />
-          Eşleştirme Oyunu
-        </Button>
+        {
+          pageType !== 'media' && (
+            <Button
+              variant="primary"
+              onClick={() => openGameModal()}
+              w={{ base: "100%", md: "fit-content" }}
+            >
+              <Box
+                as="i"
+                className="icon-plus"
+                color="base.white"
+                fontSize="14px"
+                marginRight="8px"
+              />
+              Eşleştirme Oyunu
+            </Button>
+          )
+        }
         {(pageType === "day" || pageType === "allWords") && (
           <Button
             variant="secondary"
@@ -48,6 +52,22 @@ function PageHeader(props) {
               marginRight="8px"
             />
             Kelime Ekle
+          </Button>
+        )}
+        {(pageType === "media") && (
+          <Button
+            variant="secondary"
+            onClick={openAddMediaModal}
+            w={{ base: "100%", md: "fit-content" }}
+          >
+            <Box
+              as="i"
+              className="icon-plus"
+              color="base.white"
+              fontSize="14px"
+              marginRight="8px"
+            />
+            Film / Dizi Ekle
           </Button>
         )}
       </Flex>

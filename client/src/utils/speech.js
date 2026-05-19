@@ -12,9 +12,24 @@ export function speakText(text, lang = 'en-US', rate = 1, pitch = 1) {
 
     const pickVoice = () => {
       const voices = synth.getVoices() || [];
+
       if (!voices.length) return null;
-      const base = (lang || '').split('-')[0].toLowerCase();
-      return voices.find(v => v.lang && v.lang.toLowerCase().startsWith(base)) || voices[0];
+
+      // exact match first
+      let voice = voices.find(
+        v => v.lang.toLowerCase() === lang.toLowerCase()
+      );
+
+      // fallback
+      if (!voice) {
+        const base = lang.split('-')[0].toLowerCase();
+
+        voice = voices.find(v =>
+          v.lang.toLowerCase().startsWith(base)
+        );
+      }
+
+      return voice || voices[0];
     };
 
     const speakNow = () => {

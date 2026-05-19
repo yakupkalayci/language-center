@@ -114,6 +114,7 @@ function useWordListHandler(dateType) {
         onClose();
         handleGetWords();
       }
+      return res;
     } catch(err) {
       console.log("handleSaveWord fetch error:", err);
       toast({

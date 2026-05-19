@@ -8,6 +8,7 @@ import {
   Td,
   Box,
   Text,
+  Button,
 } from "@chakra-ui/react";
 import Loader from "../common/Loader";
 import { speakText } from '../../utils/speech';
@@ -16,16 +17,16 @@ import Pagination from "./Pagination";
 function WordList(props) {
   // destruct props
   const { type, headings, data, openModal, openDeleteModal, loading, error, pageIndex, totalPages, onPageChange, retry } = props;
-   
+
   const getEmptyDataMessage = (type) => {
-    if(type === 'day' || type === 'page') {
+    if (type === 'day' || type === 'page') {
       return "Henüz listende hiç kelime yok, hemen yeni bir tane ekle."
     }
-    else if(type === 'week') {
-      return "Henüz listende hiç kelime yok. Bugün eklediğin kelimeler gün bitiminde Haftanın Kelimeleri tablosuna aktarılır."
+    else if (type === 'week') {
+      return "Bugün eklediğin kelimeler gün bitiminde Haftanın Kelimeleri tablosuna aktarılır."
     }
-    else if(type === 'month') {
-      return "Henüz listende hiç kelime yok. Bu hafta eklediğin kelimeler hafta bitiminde Ayın Kelimeleri tablosuna aktarılır."
+    else if (type === 'month') {
+      return "Bu hafta eklediğin kelimeler hafta bitiminde Ayın Kelimeleri tablosuna aktarılır."
     }
   }
 
@@ -62,7 +63,26 @@ function WordList(props) {
                       {
                         loading ? <Loader />
                           : data.words.length === 0 ? (
-                            <Text fontWeight={"semibold"}>{getEmptyDataMessage(type)}</Text>
+                            <>
+                              <Text fontWeight={"semibold"}>{getEmptyDataMessage(type)}</Text>
+                              {
+                                type === 'day' && <Button
+                                  variant="secondary"
+                                  onClick={openModal}
+                                  marginTop={4}
+                                  display={{base: 'flex', md: 'inline'}}                              
+                                >
+                                  <Box
+                                    as="i"
+                                    className="icon-plus"
+                                    color="base.white"
+                                    fontSize="14px"
+                                    marginRight="8px"
+                                  />
+                                  Kelime Ekle
+                                </Button>
+                              }
+                            </>
                           ) : (
                             <Text color="alert.danger" fontWeight={"semibold"}>Bir Hata Oluştu.</Text>
                           )
@@ -117,8 +137,8 @@ function WordList(props) {
                         role="button"
                         tabIndex={0}
                         aria-label={`Sesli oku: ${item.word}`}
-                        onClick={() => speakText(item.word).catch(() => {})}
-                        onKeyPress={(e) => { if (e.key === 'Enter' || e.key === ' ') speakText(item.word).catch(() => {}); }}
+                        onClick={() => speakText(item.word).catch(() => { })}
+                        onKeyPress={(e) => { if (e.key === 'Enter' || e.key === ' ') speakText(item.word).catch(() => { }); }}
                       />
                     </Td>
                     {type === "page" && (
@@ -163,7 +183,7 @@ function WordList(props) {
       </TableContainer>
       {/* PAGINATION */}
       {totalPages > 1 && type === 'page' && (
-        <Pagination  
+        <Pagination
           totalPages={totalPages}
           pageIndex={pageIndex}
           onPageChange={onPageChange}

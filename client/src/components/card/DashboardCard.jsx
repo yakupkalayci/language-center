@@ -2,7 +2,9 @@ import { Box, Flex, Text } from "@chakra-ui/react";
 import { NavLink } from "react-router";
 import WordList from "../list/WordList";
 import useDashboardCard from "../../hooks/useDashboardCards";
+import useWordListHandler from "../../hooks/useWordListHandlers";
 import Icon from "../common/Icon";
+import WordModal from "../../components/modal/word-modal/WordModal";
 
 function DashboardCard(props) {
   // destruct props
@@ -14,6 +16,15 @@ function DashboardCard(props) {
 
   // hooks
   const {isLoading, error, data, retry} = useDashboardCard(type);
+  const {
+    openAddModal,
+    handleSaveWord,
+    modalType,
+    editData,
+    onClose,
+    isOpen,
+    isActionLoading,
+  } = useWordListHandler();
 
   // methods
   const getIconName = () => {
@@ -28,6 +39,14 @@ function DashboardCard(props) {
         return "video-library";
     }
   };
+
+  const handleSaveNewWord = async (wordData) => {
+    const res = await handleSaveWord(wordData);
+    if (res.data.status === 'success') {
+      onClose();
+      retry();
+    }
+  }
 
   return (
     <Box
@@ -76,7 +95,15 @@ function DashboardCard(props) {
           </Flex>
         </NavLink>
       </Flex>
-      <WordList type={type} data={data} headings={headings} loading={isLoading} error={error} retry={retry} />
+      <WordList type={type} data={data} headings={headings} loading={isLoading} error={error} retry={retry} openModal={openAddModal} />
+      <WordModal
+        onClose={onClose}
+        isOpen={isOpen}
+        handleSaveWord={handleSaveNewWord}
+        modalType={modalType}
+        editData={editData}
+        isActionLoading={isActionLoading}
+      />
     </Box>
   );
 }

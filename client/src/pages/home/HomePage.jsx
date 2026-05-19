@@ -21,6 +21,12 @@ function HomePage() {
       title: "Ayın Kelimeleri",
       link: "/ayin-kelimeleri",
     },
+    {
+      id: 3,
+      type: "",
+      title: "Tüm Kelimeler",
+      link: "/kelime-listesi",
+    },
     // {
     //   id: 3,
     //   type: "video",

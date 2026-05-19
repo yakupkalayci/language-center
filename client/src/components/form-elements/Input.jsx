@@ -4,7 +4,7 @@ import Icon from "../common/Icon";
 
 function Input(props) {
   // destruct props
-  const { name, placeholder, register, validationSchema, type, errors } = props;
+  const { name, placeholder, register, validationSchema, type, errors, min } = props;
 
   // states
   const [inputType, setInputType] = useState(type);
@@ -30,6 +30,7 @@ function Input(props) {
         _autofill={{
           boxShadow: "0 0 0px 1000px #ffffff inset",
         }}
+        min={min}
       />
       {
         type === 'password' && (
