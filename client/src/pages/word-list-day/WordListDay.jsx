@@ -23,7 +23,10 @@ function WordListDay() {
     isOpenGameModal,
     onOpenGameModal,
     onCloseGameModal,
-  } = useWordListHandler("day");  
+    pageIndex,
+    totalPages,
+    onPageChange,
+  } = useWordListHandler("day");
 
   return (
     <Container>
@@ -39,6 +42,9 @@ function WordListDay() {
         data={tableData}
         openModal={openEditModal}
         openDeleteModal={openDeleteModal}
+        totalPages={totalPages}
+        onPageChange={onPageChange}
+        pageIndex={pageIndex}
       />
       <WordModal
         onClose={onClose}
@@ -49,7 +55,11 @@ function WordListDay() {
         modalType={modalType}
         editData={editData}
       />
-      <GameModal isOpen={isOpenGameModal} onClose={onCloseGameModal} />
+      <GameModal 
+        isOpen={isOpenGameModal} 
+        onClose={onCloseGameModal} 
+        words={tableData.words}
+      />
     </Container>
   );
 }

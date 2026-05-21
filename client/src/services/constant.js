@@ -6,7 +6,8 @@ export const ENDPOINTS = {
         UPDATE_PROFILE: "/users/update-profile",
         CHANGE_PASSWORD: "/users/update-password",
         REFRESH_TOKEN: "/users/refresh",
-        LOGOUT: "/users/logout"
+        LOGOUT: "/users/logout",
+        UPDATE_SETTINGS: "/users/update-settings"
     },
     WORDS: {
         GETWORDLIST: "/words"

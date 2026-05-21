@@ -13,10 +13,16 @@ import {
 import Loader from "../common/Loader";
 import { speakText } from '../../utils/speech';
 import Pagination from "./Pagination";
+import useAuthStore from "../../store/auth/authStore";
+import { accentMap } from "../../common/constants/accents";
 
 function WordList(props) {
   // destruct props
   const { type, headings, data, openModal, openDeleteModal, loading, error, pageIndex, totalPages, onPageChange, retry } = props;
+
+  // variables
+  const { userData } = useAuthStore();
+  const accentChoice = accentMap[userData?.settings?.accentChoice] || 'en-US';
 
   const getEmptyDataMessage = (type) => {
     if (type === 'day' || type === 'page') {
@@ -137,8 +143,8 @@ function WordList(props) {
                         role="button"
                         tabIndex={0}
                         aria-label={`Sesli oku: ${item.word}`}
-                        onClick={() => speakText(item.word).catch(() => { })}
-                        onKeyPress={(e) => { if (e.key === 'Enter' || e.key === ' ') speakText(item.word).catch(() => { }); }}
+                        onClick={() => speakText(item.word, accentChoice).catch(() => { })}
+                        onKeyPress={(e) => { if (e.key === 'Enter' || e.key === ' ') speakText(item.word, accentChoice).catch(() => { }); }}
                       />
                     </Td>
                     {type === "page" && (

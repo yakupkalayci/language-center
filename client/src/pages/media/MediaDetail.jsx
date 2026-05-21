@@ -70,7 +70,18 @@ function MediaDetail() {
         </Flex>
       </Box>
 
-      <WordList type="page" headings={["Kelime", "Türü", "Açıklama", "Örnekler", "Benzer Kelimeler", "Ekstra Notlar", "Sesli Dinle", "Aksiyonlar"]} data={data} openModal={(item) => { setEditData(item); setModalType('edit'); setIsOpen(true); }} openDeleteModal={(id) => { setEditData(id); setModalType('delete'); setIsOpen(true); }} loading={false} error={false} pageIndex={pageIndex} totalPages={data.pagination.totalPages} onPageChange={(p) => setPageIndex(p)} />
+      <WordList 
+        type="page" 
+        headings={["Kelime", "Türü", "Açıklama", "Örnekler", "Benzer Kelimeler", "Ekstra Notlar", "Sesli Dinle", "Aksiyonlar"]} 
+        data={data} 
+        openModal={(item) => { setEditData(item); setModalType('edit'); setIsOpen(true); }} 
+        openDeleteModal={(id) => { setEditData(id); setModalType('delete'); setIsOpen(true); }} 
+        loading={false} 
+        error={false} 
+        pageIndex={pageIndex} 
+        totalPages={data.pagination.totalPages} 
+        onPageChange={(p) => setPageIndex(p)} 
+      />
 
       <WordModal isOpen={isOpen} onClose={() => setIsOpen(false)} handleSaveWord={(d) => handleSave(d)} modalType={modalType} editData={editData} handleEditWord={(d, id) => handleEdit(d, id)} handleDelete={(id) => handleDelete(id)} isActionLoading={false} />
     </Container>

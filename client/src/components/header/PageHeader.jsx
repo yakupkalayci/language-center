@@ -29,7 +29,7 @@ function PageHeader(props) {
             >
               <Box
                 as="i"
-                className="icon-plus"
+                className="icon-videogame"
                 color="base.white"
                 fontSize="14px"
                 marginRight="8px"

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect } from "react";
 import { Container, Box, Flex, Text, Button, useToast } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import useAuthStore from "../../store/auth/authStore";
@@ -7,53 +7,84 @@ import Label from "../../components/form-elements/Label";
 import Input from "../../components/form-elements/Input";
 import Select from "../../components/form-elements/Select";
 import { FORM_RULES } from "../../common/constants/form/formRules";
-import useModalStore from "../../store/modal/modalStore";
-import { updateAccountInfos, deleteAccount } from "../../services/auth";
-import { useNavigate } from 'react-router';
-import { accentMap } from "../../common/constants/accents";
+import { updateUserSettings } from "../../services/auth";
 
 function SettingsPage() {
-    // states
-    const [errorMessage, setErrorMessage] = useState();
-    const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
-
-    // stores
-    const { userData, clearToken, clearUser, setUserData } = useAuthStore();
-    const { open, close, setActions } = useModalStore();
-
     // variables
-    const navigate = useNavigate();
     const toast = useToast();
     const accentOptions = [
         {
-            value: accentMap.EN_US,
+            value: "EN_US",
             label: 'American'
         },
         {
-            value: accentMap.EN_GB,
+            value: "EN_GB",
             label: 'British'
         }
     ];
+
+    // stores
+    const { userData, setUserData } = useAuthStore();
 
     // methods
     const {
         register,
         handleSubmit,
-        formState: { errors, dirtyFields, isDirty },
+        formState: { errors, isLoading },
         reset,
-        getValues,
     } = useForm({ defaultValues: userData });
+
+    const onSubmit = async (data) => {
+        const { dailyWordCount, accentChoice } = data;
+        const body = {
+            dailyWordCount: Number(dailyWordCount),
+            accentChoice
+        };
+        try {
+            const response = await updateUserSettings(body);
+            const res = await response.data;
+            if (res.status) {
+                toast({
+                    title: "Başarılı",
+                    description: "Ayarlar başarıyla güncellendi.",
+                    status: "success",
+                    duration: 3000,
+                    isClosable: true,
+                });
+                setUserData(res.data.user)
+            }
+        } catch (err) {
+            console.log("update user settings fetch error:", err);
+            toast({
+                title: "Hata",
+                description: "Ayarlar güncellenirken bir hata oluştu.",
+                status: "error",
+                duration: 3000,
+                isClosable: true,
+            });
+        }
+    };
+
+    // effects  
+    useEffect(() => {
+        if (userData.settings) {
+            reset(userData.settings);
+        }
+    }, [userData, reset]);
 
     return (
         <Container maxW={"70%"}>
             {/* Genel Ayarlar */}
-            <Box marginBottom={6}>
+            <Box
+                as="form"
+                onSubmit={handleSubmit(onSubmit)}
+                marginBottom={6}
+            >
                 <Flex flexDirection={"column"} gap={1} marginBottom={4}>
                     <Text fontSize={24} fontWeight={"bold"}>Genel Ayarlar</Text>
                     {/* <Text>Lorem ipsum dolor sit amet consectetur adipisicing elit. Magnam quisquam atque perspiciatis quibusdam, aperiam, fugiat dicta, repellendus quos in quas praesentium. Nisi fugiat ullam et ex, quasi autem repellat officia.</Text> */}
                 </Flex>
                 <Flex
-                    as="form"
                     flexDirection={"column"}
                     gap={4}
                     padding={{ base: "16px", md: "24px" }}
@@ -81,7 +112,18 @@ function SettingsPage() {
                         validationSchema={FORM_RULES.TEXT}
                     />
                 </Flex>
-                <Button display={"flex"} variant="primary" type="submit" mt={"16px"} ms={"auto"}>Kaydet</Button>
+                <Button
+                    disabled={isLoading}
+                    display={"flex"}
+                    variant="primary"
+                    type="submit"
+                    mt={"16px"}
+                    ms={"auto"}
+                >
+                    {
+                        isLoading ? "Kaydediliyor..." : "Ayarları Kaydet"
+                    }
+                </Button>
             </Box>
         </Container>
     );

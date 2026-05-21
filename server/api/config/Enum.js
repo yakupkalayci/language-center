@@ -19,5 +19,9 @@ module.exports = {
         INT_SERVER_ERROR: 500,
         BAD_GATEWAY: 502
     },
-    PASS_REGEX: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&.]{8,}$/ 
+    PASS_REGEX: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&.]{8,}$/ ,
+    ACCENT_CHOICES: {
+        US: 'EN_US',
+        GB: 'EN_GB'
+    }
 }

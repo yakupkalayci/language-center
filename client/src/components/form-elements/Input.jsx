@@ -4,7 +4,7 @@ import Icon from "../common/Icon";
 
 function Input(props) {
   // destruct props
-  const { name, placeholder, register, validationSchema, type, errors, min } = props;
+  const { name, placeholder, register, validationSchema, type, errors, min, customStyles, value, onChange } = props;
 
   // states
   const [inputType, setInputType] = useState(type);
@@ -19,7 +19,7 @@ function Input(props) {
   return (
     <Box position="relative">
       <ChakraInput
-        {...register(name, validationSchema)}
+        {...register?.(name, validationSchema)}
         id={name}
         placeholder={placeholder}
         type={inputType}
@@ -31,6 +31,9 @@ function Input(props) {
           boxShadow: "0 0 0px 1000px #ffffff inset",
         }}
         min={min}
+        value={value}
+        onChange={onChange}
+        {...customStyles}
       />
       {
         type === 'password' && (

@@ -68,16 +68,24 @@ router.post("/register", limiter(10), async (req, res) => {
       );
     }
 
-  body.password = await bcrypt.hash(body.password, config.SECURITY.BCRYPT_SALT_ROUNDS);
+    body.password = await bcrypt.hash(body.password, config.SECURITY.BCRYPT_SALT_ROUNDS);
 
     await prisma.user.create({
-      data: body,
+      data: {
+        ...body,
+        settings: {
+          create: {
+            dailyWordCount: 10,
+            accentChoice: Enum.ACCENT_CHOICES.US,
+          }
+        }
+      }
     });
 
     res
       .status(Enum.HTTPS_CODES.OK)
       .json(
-        Response.successResponse({ title:"Hesap oluşturuldu.", message: "Uygulamaya giriş yaparak kullanmaya başlayabilirsiniz." })
+        Response.successResponse({ title: "Hesap oluşturuldu.", message: "Uygulamaya giriş yaparak kullanmaya başlayabilirsiniz." })
       );
   } catch (err) {
     if (!res.headersSent) {
@@ -95,6 +103,9 @@ router.post("/login", limiter(10), async (req, res) => {
       where: {
         email,
       },
+      include: {
+        settings: true
+      }
     });
 
     if (!user) {
@@ -120,16 +131,16 @@ router.post("/login", limiter(10), async (req, res) => {
     };
 
     let token = jwt.encode(payload, config.JWT.SECRET);
-    const {password: _, ...userData} = user;
+    const { password: _, ...userData } = user;
 
     // create refresh token and persist
     const refreshPayload = {
       id: user.id,
       at: Date.now(),
     };
-  const refreshToken = jwt.encode(refreshPayload, config.JWT.SECRET);
-  const expiresAt = new Date(Date.now() + config.JWT.REFRESH_EXPIRE_TIME * 1000);
-  await prisma.refreshToken.create({ data: { token: refreshToken, userId: user.id, expiresAt } });
+    const refreshToken = jwt.encode(refreshPayload, config.JWT.SECRET);
+    const expiresAt = new Date(Date.now() + config.JWT.REFRESH_EXPIRE_TIME * 1000);
+    await prisma.refreshToken.create({ data: { token: refreshToken, userId: user.id, expiresAt } });
 
     // send access token in httpOnly cookie and return user data
     res.cookie('access_token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', maxAge: config.JWT.EXPIRE_TIME * 1000 });
@@ -176,18 +187,18 @@ router.post('/refresh', limiter(), async (req, res) => {
       throw new CustomError(Enum.HTTPS_CODES.UNAUTHORIZED, 'Unauthorized', 'User not found');
     }
 
-  // rotate refresh token: revoke old and create new
-  await prisma.refreshToken.updateMany({ where: { token: refreshToken }, data: { revoked: true } });
-  const newRefreshPayload = { id: user.id, at: Date.now() };
-  const newRefreshToken = jwt.encode(newRefreshPayload, config.JWT.SECRET);
-  const newExpiresAt = new Date(Date.now() + config.JWT.REFRESH_EXPIRE_TIME * 1000);
-  await prisma.refreshToken.create({ data: { token: newRefreshToken, userId: user.id, expiresAt: newExpiresAt } });
+    // rotate refresh token: revoke old and create new
+    await prisma.refreshToken.updateMany({ where: { token: refreshToken }, data: { revoked: true } });
+    const newRefreshPayload = { id: user.id, at: Date.now() };
+    const newRefreshToken = jwt.encode(newRefreshPayload, config.JWT.SECRET);
+    const newExpiresAt = new Date(Date.now() + config.JWT.REFRESH_EXPIRE_TIME * 1000);
+    await prisma.refreshToken.create({ data: { token: newRefreshToken, userId: user.id, expiresAt: newExpiresAt } });
 
-  // issue new access token
-  const newAccess = jwt.encode({ id: user.id, exp: Math.floor(Date.now() / 1000) + config.JWT.EXPIRE_TIME }, config.JWT.SECRET);
-  res.cookie('access_token', newAccess, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', maxAge: config.JWT.EXPIRE_TIME * 1000 });
-  res.cookie('refresh_token', newRefreshToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
-  res.json(Response.successResponse({ title: 'Token Refreshed' }));
+    // issue new access token
+    const newAccess = jwt.encode({ id: user.id, exp: Math.floor(Date.now() / 1000) + config.JWT.EXPIRE_TIME }, config.JWT.SECRET);
+    res.cookie('access_token', newAccess, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', maxAge: config.JWT.EXPIRE_TIME * 1000 });
+    res.cookie('refresh_token', newRefreshToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
+    res.json(Response.successResponse({ title: 'Token Refreshed' }));
   } catch (err) {
     const errorResponse = Response.errorResponse(err);
     res.status(errorResponse.code).json(errorResponse);
@@ -273,7 +284,7 @@ router.patch("/update-profile", limiter(), auth.authenticate(), async (req, res)
       data: updatedData
     });
 
-    const {password, ...userData} = updatedUser;
+    const { password, ...userData } = updatedUser;
 
     res.json(Response.successResponse({
       title: 'Profil Güncellendi',
@@ -292,16 +303,16 @@ router.patch("/update-profile", limiter(), auth.authenticate(), async (req, res)
 
 router.delete("/delete/:userId", limiter(), auth.authenticate(), async (req, res) => {
   try {
-    const userId = req.params.userId;    
+    const userId = req.params.userId;
     await prisma.user.delete({
       where: {
         id: userId
       }
     });
-    
+
     res.status(Enum.HTTPS_CODES.OK)
-    .json(Response.successResponse({title: "Hesap silindi", message: "Hesabınz başarıyla silindi."}));
-  } catch(err) {
+      .json(Response.successResponse({ title: "Hesap silindi", message: "Hesabınz başarıyla silindi." }));
+  } catch (err) {
     let errorResponse = Response.errorResponse(err);
     res.status(errorResponse.code).json(errorResponse);
   }
@@ -338,7 +349,7 @@ router.patch("/update-password", limiter(), auth.authenticate(), async (req, res
       );
     }
 
-  const hashedPassword = await bcrypt.hash(newPassword, config.SECURITY.BCRYPT_SALT_ROUNDS);
+    const hashedPassword = await bcrypt.hash(newPassword, config.SECURITY.BCRYPT_SALT_ROUNDS);
     await prisma.user.update({
       where: { id: userId },
       data: { password: hashedPassword }
@@ -359,6 +370,37 @@ router.get('/me', auth.authenticate(), async (req, res) => {
   try {
     const { password, ...userData } = req.user;
     res.json(Response.successResponse({ user: userData }));
+  } catch (err) {
+    const errorResponse = Response.errorResponse(err);
+    res.status(errorResponse.code).json(errorResponse);
+  }
+});
+
+router.put("/update-settings", limiter(), auth.authenticate(), async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { dailyWordCount, accentChoice } = req.body;
+
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        settings: {
+          update: {
+            dailyWordCount,
+            accentChoice
+          }
+        }
+      },
+      include: {
+        settings: true
+      }
+    });
+
+    res.json(Response.successResponse({
+      title: "Ayarlar Güncellendi",
+      message: "Kullanıcı ayarlarınız başarıyla güncellendi.",
+      user: updatedUser
+    }));
   } catch (err) {
     const errorResponse = Response.errorResponse(err);
     res.status(errorResponse.code).json(errorResponse);

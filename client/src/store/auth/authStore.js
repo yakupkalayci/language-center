@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-const defaultUser = { firstName: "", lastName: "", email: "" };
+const defaultUser = { firstName: "", lastName: "", email: "", settings: {} };
 
 const useAuthStore = create(
   persist(

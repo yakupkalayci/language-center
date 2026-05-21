@@ -35,3 +35,8 @@ export async function logout() {
     const url = ENDPOINTS.AUTH.LOGOUT;
     return api('POST', url);
 }
+
+export async function updateUserSettings(data) {
+    const url = ENDPOINTS.AUTH.UPDATE_SETTINGS;
+    return api('PUT', url, data)
+}

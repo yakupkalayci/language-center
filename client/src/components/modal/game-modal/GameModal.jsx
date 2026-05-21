@@ -7,70 +7,66 @@ import {
   ModalCloseButton,
   ModalBody,
   Grid,
+  Button,
+  useToast
 } from "@chakra-ui/react";
+import Input from "../../form-elements/Input";
+import Label from "../../form-elements/Label";
 import WordContainer from "./_partials/WordContainer";
 import DescContainer from "./_partials/DescContainer";
+import { getRandomItemsFromArr } from "../../../utils/getRandomItemsFromArr";
 
 function GameModal(props) {
   // destruct props
-  const { onClose, isOpen } = props;
+  const { onClose, isOpen, words } = props;
+
+  // variables
+  const toast = useToast();
+
+  // states
   const [activeWordCard, setActiveWordCard] = useState();
   const [activeDescCard, setActiveDescCard] = useState();
   const [completedCards, setCompletedCards] = useState([]);
+  const [step, setStep] = useState(0);
+  const [wordCount, setWordCount] = useState();
+  const [wordsData, setWordsData] = useState();
+  const [descsData, setDescsData] = useState();
 
-  const wordData = [
-    {
-      id: '1',
-      text: 'school',
-      desc: 'okul',
-    },
-    {
-      id: '2',
-      text: 'money',
-      desc: 'para',
-    },
-    {
-      id: '3',
-      text: 'car',
-      desc: 'araba',
-    },
-    {
-      id: '4',
-      text: 'bus',
-      desc: 'otobüs',
-    },
-    {
-      id: '5',
-      text: 'taxi',
-      desc: 'taksi',
+  const handleStartGame = () => {
+    if(wordCount > 10) {
+      toast({
+        title: "Hata",
+        description: "En fazla 10 kelime seçebilirsiniz.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
     }
-  ];
-
-  const descData = [
-    {
-      id: '6',
-      text: 'para'
-    },
-    {
-      id: '7',
-      text: 'taksi'
-    },
-    {
-      id: '8',
-      text: 'araba'
-    },
-    {
-      id: '9',
-      text: 'okul'
-    },
-    {
-      id: '10',
-      text: 'otobüs'
+    setStep(1);
+    let activeWords;
+    if(wordCount > words.length) {
+        activeWords = getRandomItemsFromArr(words, words.length);
+    } else {
+      activeWords = getRandomItemsFromArr(words, wordCount);
     }
-  ]
+    setWordsData(activeWords.map(word => {
+      return {
+        id: word.id,
+        text: word.word,
+        desc: word.description,
+      };
+    }));
+    setDescsData(activeWords.map(word => {
+      return {
+        id: word.id,
+        text: word.description,
+      };
+    }));
+  }
 
   const handleWordCardClick = (id, desc) => {
-    if(completedCards.includes(id)) return;
+    if (completedCards.includes(id)) return;
     if (id === activeWordCard) {
       setActiveWordCard(null);
       return;
@@ -82,7 +78,7 @@ function GameModal(props) {
   };
 
   const handleDescCardClick = (id, word) => {
-    if(completedCards.includes(id)) return;
+    if (completedCards.includes(id)) return;
     if (!activeWordCard) return;
     if (id === activeDescCard) {
       setActiveDescCard(null);
@@ -93,6 +89,14 @@ function GameModal(props) {
       word,
     });
   };
+
+  const handleClose = () => {
+    setStep(0);
+    setWordCount();
+    setWordsData();
+    setDescsData();
+    onClose();
+  }
 
   useEffect(() => {
     setActiveDescCard(null);
@@ -114,29 +118,53 @@ function GameModal(props) {
   }, [activeDescCard]);
 
   return (
-    <Modal onClose={onClose} isOpen={isOpen} isCentered size="2xl">
+    <Modal onClose={handleClose} isOpen={isOpen} isCentered size="2xl">
       <ModalOverlay />
       <ModalContent bgGradient="linear-gradient(0deg, #FFDEE9 0%, #B5FFFC 100%)">
         <ModalHeader>Kelime Eşleştir</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Grid
-            templateColumns="repeat(24, 1fr)"
-            columnGap={{base: '8px', sm: '16px'}}
-          >
-            <WordContainer
-              activeWordCard={activeWordCard}
-              completedCards={completedCards}
-              handleWordCardClick={handleWordCardClick}
-              data={wordData}
-            />
-            <DescContainer
-              activeDescCard={activeDescCard}
-              completedCards={completedCards}
-              handleDescCardClick={handleDescCardClick}
-              data={descData}
-            />
-          </Grid>
+          {
+            step === 0 ? (
+              <>
+                <Label label="Kaç kelime ile eşleştirmek istersiniz?" />
+                <Input
+                  name="wordCount"
+                  type="number"
+                  value={wordCount}
+                  onChange={(e) => setWordCount(e.target.value)}
+                  customStyles={{ border: '1px solid black' }}
+                />
+                <Button
+                  variant="primary"
+                  onClick={handleStartGame}
+                  marginTop={3}
+                  marginLeft={"auto"}
+                  display={"flex"}
+                >
+                  Devam Et
+                </Button>
+              </>
+            ) : (
+              <Grid
+                templateColumns="repeat(24, 1fr)"
+                columnGap={{ base: '8px', sm: '16px' }}
+              >
+                <WordContainer
+                  activeWordCard={activeWordCard}
+                  completedCards={completedCards}
+                  handleWordCardClick={handleWordCardClick}
+                  data={wordsData}
+                />
+                <DescContainer
+                  activeDescCard={activeDescCard}
+                  completedCards={completedCards}
+                  handleDescCardClick={handleDescCardClick}
+                  data={descsData}
+                />
+              </Grid>
+            )
+          }
         </ModalBody>
       </ModalContent>
     </Modal>
