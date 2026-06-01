@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useDisclosure, useToast } from "@chakra-ui/react";
-import { getWordByDateType, addWord, updateWord, deleteWord } from "../services/word";
+import { getWordByDateType, addWord, updateWord, deleteWord, getLearnedWords } from "../services/word";
 
-function useWordListHandler(dateType) {
+function useWordListHandler(dateType, isLearnedWordsPage) {
   const headings = [
     "Kelime",
     "Türü",
@@ -13,6 +13,9 @@ function useWordListHandler(dateType) {
     "Sesli Dinle",
     "Aksiyonlar",
   ];
+  if(isLearnedWordsPage) {
+    headings.pop();
+  }
   const toast = useToast();
   const [tableData, setTableData] = useState([]);
   const [editData, setEditData] = useState(null);
@@ -20,6 +23,7 @@ function useWordListHandler(dateType) {
   const [isLoading, setIsLoading] = useState(false);
   const [isActionLoading, setIsActionLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [dailyLearnedWordsData, setDailyLearnedWordsData] = useState([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
     isOpen: isOpenGameModal,
@@ -60,6 +64,27 @@ function useWordListHandler(dateType) {
       setTotalPages(pagination.totalPages);
     } catch(err) {
       console.log("handleGetWords fetch error:", err);
+      setError(true);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  const handleGetLearnedWords = async () => {
+    try {
+      setIsLoading(true);
+      setError(false);
+      const res = await getLearnedWords(pageIndex, pageSize);
+      const data = res.data.data;
+      const pagination = res.data.data.pagination;
+      setTableData({
+        words: data.words.map(word => word.word),
+        pagination
+      });
+      setDailyLearnedWordsData(data.words)
+      setTotalPages(pagination.totalPages);
+    } catch (err) {
+      console.log("handleGetLearnedWords fetch error:", err);
       setError(true);
     } finally {
       setIsLoading(false);
@@ -136,7 +161,11 @@ function useWordListHandler(dateType) {
   }
 
   useEffect(() => {
-    handleGetWords();
+    if(isLearnedWordsPage) {
+      handleGetLearnedWords();
+    } else {
+      handleGetWords();
+    }
   }, [pageIndex, pageSize]);
 
   return {
@@ -161,7 +190,8 @@ function useWordListHandler(dateType) {
     pageIndex,
     totalPages,
     onPageChange,
-    retry
+    retry,
+    dailyLearnedWordsData,
   };
 }
 

@@ -3,6 +3,7 @@ import useWordListHandler from "../../hooks/useWordListHandlers";
 import WordList from "../../components/list/WordList";
 import WordModal from "../../components/modal/word-modal/WordModal";
 import PageHeader from "../../components/header/PageHeader";
+import GameModal from "../../components/modal/game-modal/GameModal";
 
 function WordListWeek() {
   const {
@@ -18,11 +19,21 @@ function WordListWeek() {
     editData,
     onClose,
     isOpen,
+    isOpenGameModal,
+    onOpenGameModal,
+    onCloseGameModal,
   } = useWordListHandler("week");
+
+  const showGameModal = tableData?.words?.length > 0;
 
   return (
     <Container>
-      <PageHeader title="Haftanın Kelimeleri" openModal={openAddModal} />
+      <PageHeader 
+        title="Haftanın Kelimeleri" 
+        openModal={openAddModal} 
+        openGameModal={onOpenGameModal}
+        showGameModal={showGameModal}
+      />
       <WordList
         type="page"
         headings={headings}
@@ -39,6 +50,15 @@ function WordListWeek() {
         modalType={modalType}
         editData={editData}
       />
+      {
+        showGameModal && (
+          <GameModal
+            isOpen={isOpenGameModal}
+            onClose={onCloseGameModal}
+            words={tableData.words}
+          />
+        )
+      }
     </Container>
   );
 }

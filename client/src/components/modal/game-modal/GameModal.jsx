@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import {
+  Box,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -33,7 +34,7 @@ function GameModal(props) {
   const [descsData, setDescsData] = useState();
 
   const handleStartGame = () => {
-    if(wordCount > 10) {
+    if (wordCount > 10) {
       toast({
         title: "Hata",
         description: "En fazla 10 kelime seçebilirsiniz.",
@@ -45,8 +46,8 @@ function GameModal(props) {
     }
     setStep(1);
     let activeWords;
-    if(wordCount > words.length) {
-        activeWords = getRandomItemsFromArr(words, words.length);
+    if (wordCount > words.length) {
+      activeWords = getRandomItemsFromArr(words, words.length);
     } else {
       activeWords = getRandomItemsFromArr(words, wordCount);
     }
@@ -57,12 +58,16 @@ function GameModal(props) {
         desc: word.description,
       };
     }));
-    setDescsData(activeWords.map(word => {
+    setDescsData(activeWords.sort(() => Math.random() - 0.5).map(word => {
       return {
         id: word.id,
         text: word.description,
       };
     }));
+  }
+
+  const handleRestartGame = () => {
+    setStep(0);
   }
 
   const handleWordCardClick = (id, desc) => {
@@ -117,10 +122,24 @@ function GameModal(props) {
     }
   }, [activeDescCard]);
 
+  useEffect(() => {
+    const completedCount = completedCards.length;
+    const totalCount = wordsData?.length * 2;
+    const isGameOver = completedCount === totalCount;
+    if (isGameOver) {
+      setStep(2);
+    }
+
+  }, [completedCards]);
+
   return (
     <Modal onClose={handleClose} isOpen={isOpen} isCentered size="2xl">
       <ModalOverlay />
-      <ModalContent bgGradient="linear-gradient(0deg, #FFDEE9 0%, #B5FFFC 100%)">
+      <ModalContent
+        bgGradient="linear-gradient(0deg, #FFDEE9 0%, #B5FFFC 100%)"
+        maxHeight={"80vh"}
+        overflow={"auto"}
+      >
         <ModalHeader>Kelime Eşleştir</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
@@ -146,23 +165,38 @@ function GameModal(props) {
                 </Button>
               </>
             ) : (
-              <Grid
-                templateColumns="repeat(24, 1fr)"
-                columnGap={{ base: '8px', sm: '16px' }}
-              >
-                <WordContainer
-                  activeWordCard={activeWordCard}
-                  completedCards={completedCards}
-                  handleWordCardClick={handleWordCardClick}
-                  data={wordsData}
-                />
-                <DescContainer
-                  activeDescCard={activeDescCard}
-                  completedCards={completedCards}
-                  handleDescCardClick={handleDescCardClick}
-                  data={descsData}
-                />
-              </Grid>
+              <Box>
+                <Grid
+                  templateColumns="repeat(24, 1fr)"
+                  columnGap={{ base: '8px', sm: '16px' }}
+                >
+                  <WordContainer
+                    activeWordCard={activeWordCard}
+                    completedCards={completedCards}
+                    handleWordCardClick={handleWordCardClick}
+                    data={wordsData}
+                  />
+                  <DescContainer
+                    activeDescCard={activeDescCard}
+                    completedCards={completedCards}
+                    handleDescCardClick={handleDescCardClick}
+                    data={descsData}
+                  />
+                </Grid>
+                  {
+                    step === 2 && (
+                      <Button
+                        variant="primary"
+                        onClick={handleRestartGame}
+                        marginTop={3}
+                        marginLeft={"auto"}
+                        display={"flex"}
+                      >
+                        Yeniden Başlat
+                      </Button>
+                    )
+                  }
+              </Box>
             )
           }
         </ModalBody>

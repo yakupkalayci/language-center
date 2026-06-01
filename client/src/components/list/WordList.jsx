@@ -18,7 +18,7 @@ import { accentMap } from "../../common/constants/accents";
 
 function WordList(props) {
   // destruct props
-  const { type, headings, data, openModal, openDeleteModal, loading, error, pageIndex, totalPages, onPageChange, retry } = props;
+  const { type, headings, data, openModal, openDeleteModal, loading, error, pageIndex, totalPages, onPageChange, retry, isLearnedWordsPage } = props;
 
   // variables
   const { userData } = useAuthStore();
@@ -147,7 +147,7 @@ function WordList(props) {
                         onKeyPress={(e) => { if (e.key === 'Enter' || e.key === ' ') speakText(item.word, accentChoice).catch(() => { }); }}
                       />
                     </Td>
-                    {type === "page" && (
+                    {type === "page" && !isLearnedWordsPage && (
                       <Td textAlign="center">
                         <Box
                           as="i"

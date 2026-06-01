@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Input as ChakraInput, Box, position } from "@chakra-ui/react";
+import { Input as ChakraInput, Box } from "@chakra-ui/react";
 import Icon from "../common/Icon";
 
 function Input(props) {

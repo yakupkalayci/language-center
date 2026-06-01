@@ -75,7 +75,7 @@ router.post("/register", limiter(10), async (req, res) => {
         ...body,
         settings: {
           create: {
-            dailyWordCount: 10,
+            dailyWordCount: 5,
             accentChoice: Enum.ACCENT_CHOICES.US,
           }
         }

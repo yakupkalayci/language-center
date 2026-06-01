@@ -24,6 +24,8 @@ model User {
   Media         Media[]
   MediaWord     MediaWord[]
   settings      Settings?
+  learnedWords  LearnedWord[]
+  DailySession  DailySession[]
 }
 
 model Word {
@@ -42,7 +44,39 @@ model Word {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  learnedWords LearnedWord[]
+  DailySession DailySession[]
+
   @@unique([word, userId])
+  @@index([userId])
+}
+
+model LearnedWord {
+  id        String   @id @default(cuid())
+  learnedAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  wordId String
+  word   Word   @relation(fields: [wordId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, wordId])
+  @@index([userId])
+  @@index([wordId])
+}
+
+model DailySession {
+  id     String   @id @default(cuid())
+  date   DateTime
+  userId String
+  wordId String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  word Word @relation(fields: [wordId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, wordId, date])
+  @@index([userId, date])
 }
 
 enum WordType {
@@ -104,6 +138,6 @@ model Settings {
   id             String       @id @default(cuid())
   dailyWordCount Int
   accentChoice   AccentChoice @default(EN_US)
-  userId           String         @unique
-  user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         String       @unique
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

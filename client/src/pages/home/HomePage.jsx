@@ -1,5 +1,6 @@
-import { Container, Grid, GridItem } from "@chakra-ui/react";
+import { Container, Grid, GridItem, Button, Text } from "@chakra-ui/react";
 import DashboardCard from "../../components/card/DashboardCard";
+import useDailywordModalStore from "../../store/modal/dailyWordModalStore";
 
 function HomePage() {
   const dashboardCards = [
@@ -35,8 +36,21 @@ function HomePage() {
     // },
   ];
 
+  const {open} = useDailywordModalStore();
+
   return (
     <Container>
+      <Button
+        variant={"secondary"}
+        marginBottom={4}
+        marginLeft={"auto"}
+        display={"flex"}
+        paddingBlock={2}
+        height={{ base: "unset"}}
+        onClick={() => open()}
+      >
+        <Text sx={{textWrap: "auto"}}>Bugün Öğreneceğim Kelimeleri Göster</Text>
+      </Button>
       <Grid
         templateColumns="repeat(24, 1fr)"
         columnGap={{ base: "0", md: "16px" }}

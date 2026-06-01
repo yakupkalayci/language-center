@@ -1,9 +1,9 @@
-
 import { Container } from "@chakra-ui/react";
 import useWordListHandler from "../../hooks/useWordListHandlers";
 import PageHeader from "../../components/header/PageHeader";
 import WordList from "../../components/list/WordList";
 import WordModal from "../../components/modal/word-modal/WordModal";
+import GameModal from "../../components/modal/game-modal/GameModal";
 
 function WordListPage() {
     const {
@@ -20,6 +20,8 @@ function WordListPage() {
         onClose,
         isOpen,
         onOpenGameModal,
+        isOpenGameModal,
+        onCloseGameModal,
         isLoading,
         error,
         isActionLoading,
@@ -28,6 +30,8 @@ function WordListPage() {
         onPageChange,
         retry
     } = useWordListHandler();
+    
+    const showGameModal = tableData?.words?.length > 0;
 
     return (
         <Container>
@@ -36,6 +40,7 @@ function WordListPage() {
                 openModal={openAddModal}
                 openGameModal={onOpenGameModal}
                 pageType="allWords"
+                showGameModal={showGameModal}
             />
             <WordList
                 type="page"
@@ -60,6 +65,15 @@ function WordListPage() {
                 editData={editData}
                 isActionLoading={isActionLoading}
             />
+            {
+                showGameModal && (
+                    <GameModal
+                        isOpen={isOpenGameModal}
+                        onClose={onCloseGameModal}
+                        words={tableData.words}
+                    />
+                )
+            }
         </Container>
     )
 }

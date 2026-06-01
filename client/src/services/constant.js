@@ -10,6 +10,9 @@ export const ENDPOINTS = {
         UPDATE_SETTINGS: "/users/update-settings"
     },
     WORDS: {
-        GETWORDLIST: "/words"
+        GETWORDLIST: "/words",
+        GET_DAILY_LEARNING_WORDS: "/words/daily-learning",
+        MARK_WORD_AS_LEARNED: "/words/daily-learning/:id/mark-learned",
+        GET_LEARNED_WORDS: "/words/learned"
     }
 }

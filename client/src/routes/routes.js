@@ -10,6 +10,7 @@ const ProfilePage = lazy(() => import("../pages/profile/ProfilePage"));
 const MediaList = lazy(() => import("../pages/media/MediaList"));
 const MediaDetail = lazy(() => import("../pages/media/MediaDetail"));
 const SettingsPage = lazy(() => import("../pages/settings/SettingsPage"));
+const LearnedWordsPage = lazy(() => import("../pages/learned-words/LearnedWords"));
 
 export const routes = [
   {
@@ -80,6 +81,13 @@ export const routes = [
     exact: true,
     path: "/profilim",
     component: ProfilePage,
+    isPrivate: true
+  },
+  {
+    title: "Öğrendiğim Kelimeler",
+    exact: true,
+    path: "/ogrenilen-kelimeler",
+    component: LearnedWordsPage,
     isPrivate: true
   },
 ];

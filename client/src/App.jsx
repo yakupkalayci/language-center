@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router";
 import { routes } from "./routes/routes";
 import PrivateRoute from "./components/authentication/PrivateRoute";
 import InfoModal from "./components/modal/info-modal/InfoModal";
+import DailyWordsModal from "./components/modal/daily-words-modal/DailyWordsModal";
 import DefaultLayout from "./layouts/DefaultLayout";
 
 function App() {
@@ -36,6 +37,7 @@ function App() {
         ))}
       </Routes>
       <InfoModal />
+      <DailyWordsModal />
     </>
   );
 }

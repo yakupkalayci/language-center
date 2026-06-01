@@ -29,6 +29,12 @@ function SideBar() {
       icon: "library-books",
     },
     {
+      id: 2-2,
+      label: "Öğrendiğim Kelimeler",
+      href: "/ogrenilen-kelimeler",
+      icon: "leaderboard",
+    },
+    {
       id: 3,
       label: "Kelime Oyunları",
       href: "/kelime-oyunlari",

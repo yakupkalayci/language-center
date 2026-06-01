@@ -144,4 +144,124 @@ router.delete("/:id", auth.authenticate(), async (req, res) => {
   }
 });
 
+router.get("/daily-learning", auth.authenticate(), async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+
+    const existings = await prisma.dailySession.findMany({
+      where: {
+        userId,
+        date: startOfToday,
+      },
+      include: {word: true}
+    });
+
+    if (existings.length) {
+      return res.json(Response.successResponse({
+        words: existings.map(e => e.word),
+      }));
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: { settings: true }
+    });
+
+    const dailyWordCount = user.settings.dailyWordCount;
+
+    const words = await prisma.word.findMany({
+      where: { 
+        userId,
+        learnedWords: {
+          none: {
+            userId
+          }
+        }
+      },
+      take: dailyWordCount || 5
+    });
+
+    await prisma.dailySession.createMany({
+      data: words.map(word => ({
+        userId,
+        wordId: word.id,
+        date: startOfToday,
+      })),
+    });
+
+    res.json(Response.successResponse({ words }));
+  } catch (err) {
+    const errorResponse = Response.errorResponse(err);
+    res.status(errorResponse.code).json(errorResponse);
+  }
+});
+
+router.post("/daily-learning/:id/mark-learned", auth.authenticate(), async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const wordId = req.params.id;
+
+    await prisma.learnedWord.upsert({
+      where: {
+        userId_wordId: {
+          userId,
+          wordId
+        },
+      },
+      update: {},
+      create: {
+        userId,
+        wordId
+      },
+    });
+
+    res.json(Response.successResponse({
+      title: 'Kelime işaretlendi',
+      message: 'Kelime başarıyla işaretlendi.'
+    }));
+  } catch (err) {
+    const errorResponse = Response.errorResponse(err);
+    res.status(errorResponse.code).json(errorResponse);
+  }
+});
+
+router.get("/learned", auth.authenticate(), async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const page = Number(req.query.pageIndex) || 1;
+    const pageSize = Number(req.query.pageSize) || 10;
+
+    const skip = (page - 1) * pageSize;
+
+    const [words, total] = await Promise.all([
+      prisma.learnedWord.findMany({
+        where: {userId},
+        skip,
+        take: pageSize,
+        include: {word: true}
+      }),
+      prisma.learnedWord.count({ where: {userId} })
+    ]);
+
+    const totalPages = Math.ceil(total / pageSize);
+
+    res.json(Response.successResponse({
+      words,
+      pagination: {
+        total,
+        page,
+        pageSize,
+        totalPages,
+        hasNext: page < totalPages,
+        hasPrev: page > 1
+      }
+    }));
+  } catch (err) {
+    const errorResponse = Response.errorResponse(err);
+    res.status(errorResponse.code).json(errorResponse);
+  }
+});
+
 module.exports = router;

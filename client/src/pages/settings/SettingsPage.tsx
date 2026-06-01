@@ -6,6 +6,7 @@ import FormItem from "../../components/form-elements/formItem";
 import Label from "../../components/form-elements/Label";
 import Input from "../../components/form-elements/Input";
 import Select from "../../components/form-elements/Select";
+import Icon from "../../components/common/Icon";
 import { FORM_RULES } from "../../common/constants/form/formRules";
 import { updateUserSettings } from "../../services/auth";
 
@@ -92,7 +93,30 @@ function SettingsPage() {
                     bgColor="base.white"
                 >
                     <FormItem errors={errors} itemName="dailyWordCount">
-                        <Label label="Günlük kaç yeni kelime öğrenmek istersin?" />
+                        <Flex
+                            alignItems={"center"}
+                            justifyContent={"flex-start"}
+                            gap={2}
+                        >
+                            <Label label="Günlük kaç yeni kelime öğrenmek istersin?" />
+                            <Icon 
+                                icon="info" 
+                                size={16}
+                                style={{marginBottom: '8px'}}
+                                onMouseEnter={() => {
+                                    toast({
+                                        title: "Bilgi",
+                                        description: "Bugün yaptığın kelime sayısı değişikliği yarından itibaren geçerli olur.",
+                                        status: "info",
+                                        duration: 3000,
+                                        isClosable: true,
+                                    });
+                                }}
+                                onMouseLeave={() => {
+                                    toast.closeAll();
+                                }}
+                            />
+                        </Flex>
                         <Input
                             name="dailyWordCount"
                             type="number"
@@ -100,6 +124,16 @@ function SettingsPage() {
                             register={register}
                             errors={errors}
                             validationSchema={FORM_RULES.TEXT}
+                            iconName="info"
+                            onHoverIcon={() => {
+                                toast({
+                                    title: "Bilgi",
+                                    description: "Günlük öğrenmek istediğin kelime sayısını belirt.",
+                                    status: "info",
+                                    duration: 3000,
+                                    isClosable: true,
+                                });
+                            }}
                         />
                     </FormItem>
                     <Select

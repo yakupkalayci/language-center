@@ -1,7 +1,7 @@
 import { Flex, Heading, Button, Box } from "@chakra-ui/react";
 
 function PageHeader(props) {
-  const { title, openModal, openGameModal, openAddMediaModal, pageType } = props;
+  const { title, openModal, openGameModal, openAddMediaModal, pageType, showGameModal } = props;
 
   return (
     <Flex
@@ -21,7 +21,7 @@ function PageHeader(props) {
         width={{ base: "100%", md: "unset" }}
       >
         {
-          pageType !== 'media' && (
+          pageType !== 'media' && showGameModal && (
             <Button
               variant="primary"
               onClick={() => openGameModal()}
