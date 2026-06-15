@@ -1,6 +1,7 @@
 import { lazy } from "react";
 
 const HomePage = lazy(() => import("../pages/home/HomePage"));
+const DashboardPage = lazy(() => import("../pages/dashboard/DashboardPage"));
 const AuthPage = lazy(() => import("../pages/auth/AuthPage"));
 const WordListPage = lazy(() => import("../pages/word-list/WordList"));
 const WordListDay = lazy(() => import("../pages/word-list-day/WordListDay"));
@@ -14,80 +15,99 @@ const LearnedWordsPage = lazy(() => import("../pages/learned-words/LearnedWords"
 
 export const routes = [
   {
-    title: "Giriş Yap",
-    exact: true,
-    path: "/uyelik-islemleri",
-    component: AuthPage,
-    isPrivate: false
-  },
-  {
     title: "Anasayfa",
     exact: true,
     path: "/",
     component: HomePage,
-    isPrivate: true
+    isPrivate: false,
+    defaultLayout: false,
+  },
+  {
+    title: "Giriş Yap",
+    exact: true,
+    path: "/uyelik-islemleri",
+    component: AuthPage,
+    isPrivate: false,
+    defaultLayout: true,
+  },
+  {
+    title: "Panel",
+    exact: true,
+    path: "/panel",
+    component: DashboardPage,
+    isPrivate: true,
+    defaultLayout: true,
   },
   {
     title: "Günün Kelimeleri",
     exact: true,
     path: "/gunun-kelimeleri",
     component: WordListDay,
-    isPrivate: true
+    isPrivate: true,
+    defaultLayout: true,
   },
   {
     title: "Haftanın Kelimeleri",
     exact: true,
     path: "/haftanin-kelimeleri",
     component: WordListWeek,
-    isPrivate: true
+    isPrivate: true,
+    defaultLayout: true,
   },
   {
     title: "Ayın Kelimeleri",
     exact: true,
     path: "/ayin-kelimeleri",
     component: WordListMonth,
-    isPrivate: true
+    isPrivate: true,
+    defaultLayout: true,
   },
   {
     title: "Kelime Listesi",
     exact: true,
     path: "/kelime-listesi",
     component: WordListPage,
-    isPrivate: true
+    isPrivate: true,
+    defaultLayout: true,
   },
   {
     title: "Film / Dizi",
     exact: true,
     path: "/film-dizi-video-kelimeleri",
     component: MediaList,
-    isPrivate: true
+    isPrivate: true,
+    defaultLayout: true,
   },
   {
     title: "Film / Dizi Detay",
     exact: false,
     path: "/media/:id",
     component: MediaDetail,
-    isPrivate: true
+    isPrivate: true,
+    defaultLayout: true,
   },
   {
     title: "Ayarlar",
     exact: true,
     path: "/ayarlar",
     component: SettingsPage,
-    isPrivate: true
+    isPrivate: true,
+    defaultLayout: true,
   },
   {
     title: "Profilim",
     exact: true,
     path: "/profilim",
     component: ProfilePage,
-    isPrivate: true
+    isPrivate: true,
+    defaultLayout: true,
   },
   {
     title: "Öğrendiğim Kelimeler",
     exact: true,
     path: "/ogrenilen-kelimeler",
     component: LearnedWordsPage,
-    isPrivate: true
+    isPrivate: true,
+    defaultLayout: true,
   },
 ];

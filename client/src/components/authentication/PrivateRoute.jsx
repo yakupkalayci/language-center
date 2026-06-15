@@ -1,6 +1,5 @@
 import useAuthStore from "../../store/auth/authStore";
-import { useLocation, useNavigate, Navigate } from "react-router-dom";
-import DefaultLayout from "../../layouts/DefaultLayout";
+import { useLocation, Navigate } from "react-router-dom";
 
 function PrivateRoute({ children }) {
   const { userData } = useAuthStore();
@@ -10,11 +9,10 @@ function PrivateRoute({ children }) {
     // Preserve where the user wanted to go
     return <Navigate to="/uyelik-islemleri" state={{ from: location }} replace />;
   }
-
   return (
-    <DefaultLayout>
+    <>
       {children}
-    </DefaultLayout>
+    </>
   );
 }
 

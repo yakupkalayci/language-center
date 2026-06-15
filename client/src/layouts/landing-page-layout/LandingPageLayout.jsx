@@ -1,9 +1,9 @@
 import { Box, Flex } from "@chakra-ui/react";
 import Header from "./header/Header";
-import Footer from "./footer/Footer";
+import Footer from "../footer/Footer";
 import { useLocation } from "react-router";
 
-function DefaultLayout({ children }) {
+function LandingPageLayout({ children }) {
   const location = useLocation();
   const isAuthPageActive = location.pathname === "/uyelik-islemleri";
 
@@ -12,7 +12,6 @@ function DefaultLayout({ children }) {
       <Header />
       <Box
         as="main"
-        bgColor="#F8F9FA"
         flex="1 0 auto"
         display={isAuthPageActive ? "flex" : "block"}
         justifyContent="center"
@@ -25,4 +24,4 @@ function DefaultLayout({ children }) {
   );
 }
 
-export default DefaultLayout;
+export default LandingPageLayout;

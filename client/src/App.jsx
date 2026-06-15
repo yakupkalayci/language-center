@@ -4,7 +4,8 @@ import { routes } from "./routes/routes";
 import PrivateRoute from "./components/authentication/PrivateRoute";
 import InfoModal from "./components/modal/info-modal/InfoModal";
 import DailyWordsModal from "./components/modal/daily-words-modal/DailyWordsModal";
-import DefaultLayout from "./layouts/DefaultLayout";
+import DefaultLayout from "./layouts/default-layout/DefaultLayout";
+import LandingPageLayout from "./layouts/landing-page-layout/LandingPageLayout";
 
 function App() {
   return (
@@ -18,7 +19,9 @@ function App() {
               element={
                 <Suspense fallback={<div>Loading..</div>}>
                   <PrivateRoute>
-                    <route.component />
+                    <DefaultLayout>
+                      <route.component />
+                    </DefaultLayout>
                   </PrivateRoute>
                 </Suspense>
               }
@@ -28,9 +31,15 @@ function App() {
               key={index}
               path={route.path}
               element={
-                <DefaultLayout>
-                  <route.component />
-                </DefaultLayout>
+                route.defaultLayout ? (
+                  <DefaultLayout>
+                    <route.component />
+                  </DefaultLayout>
+                ) : (
+                  <LandingPageLayout>
+                    <route.component />
+                  </LandingPageLayout>
+                )
               }
             />
           )
