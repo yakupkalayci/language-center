@@ -14,6 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { useLocation, useNavigate, NavLink } from "react-router-dom";
 import useAuthStore from "../../store/auth/authStore";
+import { logout as serverLogout } from "../../services/auth";
 import useModalStore from "../../store/modal/modalStore";
 import Drawer from "../../components/drawer/Drawer";
 import SideBar from "./_partials/SideBar";
@@ -22,7 +23,7 @@ function Header() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const location = useLocation();
   const navigate = useNavigate();
-  const { userData, clearUser, clearToken } = useAuthStore();
+  const { userData, clearUser } = useAuthStore();
   const { open, setStatus, setActions, close } = useModalStore();
 
   const navigteToLoginPage = () => {
@@ -43,9 +44,13 @@ function Header() {
       {
         label: "Evet",
         variant: "danger",
-        onClick: () => {
+        onClick: async () => {
+          try {
+            await serverLogout();
+          } catch (_) {
+            // ignore server logout errors
+          }
           clearUser();
-          clearToken();
           navigate("/");
           close();
         }

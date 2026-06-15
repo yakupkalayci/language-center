@@ -6,9 +6,7 @@ const defaultUser = { firstName: "", lastName: "", email: "", settings: {} };
 const useAuthStore = create(
   persist(
     (set) => ({
-      token: "",
       userData: defaultUser,
-      setToken: (data) => set({ token: data }),
       setUserData: (data) =>
         set((state) => ({
           userData: {
@@ -16,9 +14,8 @@ const useAuthStore = create(
             ...data,
           },
         })),
-      clearToken: () => set({ token: "" }),
       clearUser: () => set({ userData: defaultUser }),
-      logout: () => set({ token: "", userData: defaultUser }),
+      logout: () => set({ userData: defaultUser }),
     }),
     { name: "auth-store" }
   )

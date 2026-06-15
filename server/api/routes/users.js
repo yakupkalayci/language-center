@@ -184,11 +184,12 @@ router.post("/login", limiter(10), async (req, res) => {
     };
     const refreshToken = jwt.encode(refreshPayload, config.JWT.SECRET);
     const expiresAt = new Date(Date.now() + config.JWT.REFRESH_EXPIRE_TIME * 1000);
-    await prisma.refreshToken.create({ data: { token: refreshToken, userId: user.id, expiresAt } });
+  await prisma.refreshToken.create({ data: { token: refreshToken, userId: user.id, expiresAt } });
 
-    // send access token in httpOnly cookie and return user data
-    res.cookie('access_token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', maxAge: config.JWT.EXPIRE_TIME * 1000 });
-    res.cookie('refresh_token', refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
+  // send access token in httpOnly cookie and return user data
+  res.cookie('access_token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', maxAge: config.JWT.EXPIRE_TIME * 1000 });
+  // set refresh cookie maxAge to refresh expiry so browser persists it correctly
+  res.cookie('refresh_token', refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', maxAge: config.JWT.REFRESH_EXPIRE_TIME * 1000 });
 
     res.json({ status: "success", userData: userData });
   } catch (err) {
@@ -208,8 +209,17 @@ router.post('/refresh', limiter(), async (req, res) => {
     }
 
     const stored = await prisma.refreshToken.findUnique({ where: { token: refreshToken } });
-    if (!stored || stored.revoked) {
+    if (!stored) {
       throw new CustomError(Enum.HTTPS_CODES.UNAUTHORIZED, 'Unauthorized', 'Invalid refresh token');
+    }
+
+    // If token was already revoked, this could be a refresh-token-reuse attack.
+    if (stored.revoked) {
+      // revoke all tokens for this user to force logout everywhere
+      if (stored.userId) {
+        await prisma.refreshToken.updateMany({ where: { userId: stored.userId }, data: { revoked: true } });
+      }
+      throw new CustomError(Enum.HTTPS_CODES.UNAUTHORIZED, 'Unauthorized', 'Refresh token revoked');
     }
 
     if (stored.expiresAt && new Date(stored.expiresAt) < new Date()) {
@@ -232,7 +242,7 @@ router.post('/refresh', limiter(), async (req, res) => {
     }
 
     // rotate refresh token: revoke old and create new
-    await prisma.refreshToken.updateMany({ where: { token: refreshToken }, data: { revoked: true } });
+  await prisma.refreshToken.updateMany({ where: { token: refreshToken }, data: { revoked: true } });
     const newRefreshPayload = { id: user.id, at: Date.now() };
     const newRefreshToken = jwt.encode(newRefreshPayload, config.JWT.SECRET);
     const newExpiresAt = new Date(Date.now() + config.JWT.REFRESH_EXPIRE_TIME * 1000);
@@ -240,8 +250,8 @@ router.post('/refresh', limiter(), async (req, res) => {
 
     // issue new access token
     const newAccess = jwt.encode({ id: user.id, exp: Math.floor(Date.now() / 1000) + config.JWT.EXPIRE_TIME }, config.JWT.SECRET);
-    res.cookie('access_token', newAccess, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', maxAge: config.JWT.EXPIRE_TIME * 1000 });
-    res.cookie('refresh_token', newRefreshToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
+  res.cookie('access_token', newAccess, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', maxAge: config.JWT.EXPIRE_TIME * 1000 });
+  res.cookie('refresh_token', newRefreshToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', maxAge: config.JWT.REFRESH_EXPIRE_TIME * 1000 });
     res.json(Response.successResponse({ title: 'Token Refreshed' }));
   } catch (err) {
     const errorResponse = Response.errorResponse(err);
@@ -250,7 +260,7 @@ router.post('/refresh', limiter(), async (req, res) => {
 });
 
 // Logout: revoke refresh token and clear cookies
-router.post('/logout', limiter(), auth.authenticate(), async (req, res) => {
+router.post('/logout', limiter(), async (req, res) => {
   try {
     const refreshToken = req.cookies?.refresh_token || req.body?.refresh_token;
     if (refreshToken) {
@@ -258,6 +268,7 @@ router.post('/logout', limiter(), auth.authenticate(), async (req, res) => {
     } else if (req.user && req.user.id) {
       await prisma.refreshToken.updateMany({ where: { userId: req.user.id }, data: { revoked: true } });
     }
+    // clear cookies regardless
     res.clearCookie('access_token');
     res.clearCookie('refresh_token');
     res.json(Response.successResponse({ title: 'Logged out' }));

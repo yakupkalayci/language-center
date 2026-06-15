@@ -8,7 +8,7 @@ import Input from "../../components/form-elements/Input";
 import ChangePasswordModal from "../../components/modal/change-password-modal/ChangePasswordModal";
 import { FORM_RULES } from "../../common/constants/form/formRules";
 import useModalStore from "../../store/modal/modalStore";
-import { updateAccountInfos, deleteAccount } from "../../services/auth";
+import { updateAccountInfos, deleteAccount, logout as serverLogout } from "../../services/auth";
 import { useNavigate } from 'react-router';
 
 function ProfilePage() {
@@ -34,10 +34,16 @@ function ProfilePage() {
   } = useForm({ defaultValues: userData });
 
   const logout = () => {
-    clearUser();
-    clearToken();
-    navigate("/uyelik-islemleri");
-    close();
+    (async () => {
+      try {
+        await serverLogout();
+      } catch (_) {
+        // ignore
+      }
+      clearUser();
+      navigate("/uyelik-islemleri");
+      close();
+    })();
   }
 
   const handleDeleteAccount = async () => {

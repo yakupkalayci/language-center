@@ -170,10 +170,6 @@ router.get("/daily-learning", auth.authenticate(), async (req, res) => {
     });
 
     if (words.length) {
-      console.log("ykp", words);;
-      
-      
-      
       await prisma.dailySession.createMany({
         data: words.map(word => ({
           userId,
