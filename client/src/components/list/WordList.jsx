@@ -68,7 +68,7 @@ function WordList(props) {
                     <Box w={"100%"} position={"absolute"} left={"50%"} top={"50%"} transform={"translate(-50%, -50%)"}>
                       {
                         loading ? <Loader />
-                          : data.words.length === 0 ? (
+                          : data?.words?.length === 0 ? (
                             <>
                               <Text fontWeight={"semibold"}>{getEmptyDataMessage(type)}</Text>
                               {

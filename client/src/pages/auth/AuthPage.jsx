@@ -11,15 +11,17 @@ import {
 import { useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import useAuthStore from "../../store/auth/authStore";
+import useDailywordModalStore from "../../store/modal/dailyWordModalStore";
 import FormItem from "../../components/form-elements/formItem";
 import Input from "../../components/form-elements/Input";
-import { login, signup, refreshToken } from "../../services/auth";
+import { login, signup } from "../../services/auth";
 import { FORM_RULES } from "../../common/constants/form/formRules";
 
 function AuthPage() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { token, userData, setUserData } = useAuthStore();
+  const { userData, setUserData } = useAuthStore();
+  const { open } = useDailywordModalStore();
   const [formType, setFormType] = useState();
 
   const toast = useToast();
@@ -33,22 +35,25 @@ function AuthPage() {
 
   const handleLogin = async (data) => {
     try {
-    const response = await login(data);
-    const res = await response.data;
+      const response = await login(data);
+      const res = await response.data;
 
-    if(res.status === 'success') {
-  // server sets access_token cookie and refresh_token cookie; store only user data
-  setUserData(res.userData);
-  // navigate immediately (also handled by userData effect)
-  const from = location.state?.from || "/";
-  navigate(from, { replace: true });
-    } else if(res.status === 'error') {      
-      const error = new Error(res.error.description);
-      error.title = res.error.title;
-      error.message = res.error.description;
-      throw error;
-    }
-    } catch(err) {      
+      if (res.status === 'success') {
+        // server sets access_token cookie and refresh_token cookie; store only user data
+        setUserData(res.userData);
+        // navigate immediately (also handled by userData effect)
+        const from = location.state?.from || "/";
+        navigate(from, { replace: true });
+        if (res.userData.settings.showDailyLearningWordModal) {
+          open();
+        }
+      } else if (res.status === 'error') {
+        const error = new Error(res.error.description);
+        error.title = res.error.title;
+        error.message = res.error.description;
+        throw error;
+      }
+    } catch (err) {
       console.log("Handle login error:", err);
       throw err;
     }

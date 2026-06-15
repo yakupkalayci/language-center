@@ -24,6 +24,10 @@ function useWordListHandler(dateType, isLearnedWordsPage) {
   const [isActionLoading, setIsActionLoading] = useState(false);
   const [error, setError] = useState(false);
   const [dailyLearnedWordsData, setDailyLearnedWordsData] = useState([]);
+  const [selectedDate, setSelectedDate] = useState({
+    from: new Date(new Date().setDate(new Date().getDate() - 7)),
+    to: new Date()
+  });
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
     isOpen: isOpenGameModal,
@@ -74,14 +78,14 @@ function useWordListHandler(dateType, isLearnedWordsPage) {
     try {
       setIsLoading(true);
       setError(false);
-      const res = await getLearnedWords(pageIndex, pageSize);
+      const res = await getLearnedWords(pageIndex, pageSize, selectedDate.from.toISOString(), selectedDate.to.toISOString());
       const data = res.data.data;
       const pagination = res.data.data.pagination;
       setTableData({
         words: data.words.map(word => word.word),
         pagination
       });
-      setDailyLearnedWordsData(data.words)
+      setDailyLearnedWordsData(data.dailyCounts)
       setTotalPages(pagination.totalPages);
     } catch (err) {
       console.log("handleGetLearnedWords fetch error:", err);
@@ -168,6 +172,12 @@ function useWordListHandler(dateType, isLearnedWordsPage) {
     }
   }, [pageIndex, pageSize]);
 
+  useEffect(() => {
+    if(isLearnedWordsPage) {
+      handleGetLearnedWords();
+    }
+  }, [selectedDate.from, selectedDate.to]);
+
   return {
     headings,
     tableData,
@@ -192,6 +202,8 @@ function useWordListHandler(dateType, isLearnedWordsPage) {
     onPageChange,
     retry,
     dailyLearnedWordsData,
+    selectedDate,
+    setSelectedDate
   };
 }
 

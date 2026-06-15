@@ -1,8 +1,9 @@
 import { create } from "zustand";
 import { getDailyLearningWords } from "../../services/word";
+import useAuthStore from "../auth/authStore";
 
 const useDailywordModalStore = create((set) => ({
-    isOpen: false,
+    isOpen: useAuthStore.getState().userData?.settings?.showDailyLearningWordModal ?? false,
     isLoading: false,
     error: null,
     words: [],

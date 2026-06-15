@@ -1,7 +1,13 @@
+import { useCallback } from "react";
 import { Flex, Heading, Button, Box } from "@chakra-ui/react";
+import DateRangePicker from "../date-range-picler/DateRangePicker";
 
 function PageHeader(props) {
-  const { title, openModal, openGameModal, openAddMediaModal, pageType, showGameModal } = props;
+  const { title, openModal, openGameModal, openAddMediaModal, pageType, showGameModal, hasDateFilter, selectedDate, setSelectedDate } = props;
+
+  const handleDateChange = useCallback((date) => {
+  setSelectedDate(date);
+}, []);
 
   return (
     <Flex
@@ -70,6 +76,14 @@ function PageHeader(props) {
             Film / Dizi Ekle
           </Button>
         )}
+        {
+          hasDateFilter && (
+            <DateRangePicker 
+              date={selectedDate}
+              onDateChange={handleDateChange}
+            />
+          )
+        }
       </Flex>
     </Flex>
   );

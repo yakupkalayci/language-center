@@ -24,7 +24,7 @@ export async function deleteWord(id) {
 
 export async function getWordByDateType(dateType, pageIndex, pageSize) {
     const tzOffset = new Date().getTimezoneOffset();
-    const url = ENDPOINTS.WORDS.GETWORDLIST + `?dateType=${dateType}&pageIndex=${pageIndex}&pageSize=${pageSize}&tzOffset=${tzOffset}`;
+    const url = ENDPOINTS.WORDS.GETWORDLIST + `?dateType=${dateType}&pageIndex=${pageIndex}&pageSize=${pageSize}&tzOffset=${tzOffset}`
     return api('GET', url);
 }
 
@@ -38,7 +38,7 @@ export async function markWordAsLearned(wordId) {
     return api('POST', url);
 }
 
-export async function getLearnedWords(pageIndex, pageSize) {
-    const url = ENDPOINTS.WORDS.GET_LEARNED_WORDS + `?pageIndex=${pageIndex}&pageSize=${pageSize}`;
+export async function getLearnedWords(pageIndex, pageSize, startDate, endDate) {
+    const url = ENDPOINTS.WORDS.GET_LEARNED_WORDS + `?pageIndex=${pageIndex}&pageSize=${pageSize}&startDate=${startDate}&endDate=${endDate}`;
     return api('GET', url);
 }

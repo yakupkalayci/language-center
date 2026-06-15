@@ -131,7 +131,51 @@ router.post("/login", limiter(10), async (req, res) => {
     };
 
     let token = jwt.encode(payload, config.JWT.SECRET);
-    const { password: _, ...userData } = user;
+
+    // Check For Daily Learning Words Modal Shown
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+    const learnedWordCount = await prisma.learnedWord.count({
+      where: {
+        userId: user.id,
+        learnedAt: {
+          gte: startOfToday,
+          lte: new Date()
+        }
+      },
+    });
+
+    const dailySessionWordCount = await prisma.dailySession.count({
+      where: {
+        userId: user.id,
+        date: startOfToday
+      }
+    });
+
+    let showDailyLearningWordModal = false;
+    if (learnedWordCount) {
+      if(learnedWordCount !== dailySessionWordCount) {
+        showDailyLearningWordModal = true;
+      }
+    } else {
+      showDailyLearningWordModal = true;
+    }
+
+    const updateUser = await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        settings: {
+          update: {
+            showDailyLearningWordModal,
+          }
+        },
+      },
+      include: {
+        settings: true
+      }
+    });
+
+    const { password: _, ...userData } = updateUser;
 
     // create refresh token and persist
     const refreshPayload = {

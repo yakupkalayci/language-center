@@ -58,7 +58,7 @@ router.get("/", auth.authenticate(), async (req, res) => {
         ...(endDate ? { lte: endDate } : {})
       }
     } : { userId };
-
+    
     const [words, total] = await Promise.all([
       prisma.word.findMany({
         where,
@@ -150,20 +150,6 @@ router.get("/daily-learning", auth.authenticate(), async (req, res) => {
     const startOfToday = new Date();
     startOfToday.setHours(0, 0, 0, 0);
 
-    const existings = await prisma.dailySession.findMany({
-      where: {
-        userId,
-        date: startOfToday,
-      },
-      include: {word: true}
-    });
-
-    if (existings.length) {
-      return res.json(Response.successResponse({
-        words: existings.map(e => e.word),
-      }));
-    }
-
     const user = await prisma.user.findUnique({
       where: { id: userId },
       include: { settings: true }
@@ -183,13 +169,20 @@ router.get("/daily-learning", auth.authenticate(), async (req, res) => {
       take: dailyWordCount || 5
     });
 
-    await prisma.dailySession.createMany({
-      data: words.map(word => ({
-        userId,
-        wordId: word.id,
-        date: startOfToday,
-      })),
-    });
+    if (words.length) {
+      console.log("ykp", words);;
+      
+      
+      
+      await prisma.dailySession.createMany({
+        data: words.map(word => ({
+          userId,
+          wordId: word.id,
+          date: startOfToday,
+        })),
+        skipDuplicates: true,
+      });
+    }
 
     res.json(Response.successResponse({ words }));
   } catch (err) {
@@ -202,6 +195,10 @@ router.post("/daily-learning/:id/mark-learned", auth.authenticate(), async (req,
   try {
     const userId = req.user.id;
     const wordId = req.params.id;
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+    const endOfToday = new Date();
+    endOfToday.setHours(23, 59, 59, 999);
 
     await prisma.learnedWord.upsert({
       where: {
@@ -217,9 +214,39 @@ router.post("/daily-learning/:id/mark-learned", auth.authenticate(), async (req,
       },
     });
 
+    const learnedWordCount = await prisma.learnedWord.count({
+      where: {
+        userId,
+        learnedAt: {
+          gte: startOfToday,
+          lte: endOfToday
+        }
+      },
+    });
+
+    const dailySessionWordCount = await prisma.dailySession.count({
+      where: {
+        userId,
+        date: startOfToday
+      }
+    });
+
+    if (learnedWordCount === dailySessionWordCount) {
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          settings: {
+            update: {
+              showDailyLearningWordModal: false,
+            }
+          },
+        },
+      });
+    }
+
     res.json(Response.successResponse({
       title: 'Kelime işaretlendi',
-      message: 'Kelime başarıyla işaretlendi.'
+      message: 'Kelime başarıyla işaretlendi.',
     }));
   } catch (err) {
     const errorResponse = Response.errorResponse(err);
@@ -233,16 +260,60 @@ router.get("/learned", auth.authenticate(), async (req, res) => {
     const page = Number(req.query.pageIndex) || 1;
     const pageSize = Number(req.query.pageSize) || 10;
 
+    const startDate = req.query.startDate;
+    const endDate = req.query.endDate;
+
+    if (!startDate || !endDate) {
+      throw new CustomError(
+        Enum.HTTPS_CODES.BAD_REQUEST,
+        "Hata.",
+        "Başlangıç ve bitiş tarihi girilmesi zorunludur."
+      );
+    }
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    end.setHours(23,59,59,999);
+
     const skip = (page - 1) * pageSize;
 
-    const [words, total] = await Promise.all([
+    const [words, total, dailyCounts] = await Promise.all([
       prisma.learnedWord.findMany({
-        where: {userId},
+        where: {
+          userId,
+          learnedAt: {
+            gte: start,
+            lte: end
+          }
+        },
         skip,
         take: pageSize,
-        include: {word: true}
+        include: {word: true},
+        orderBy: {
+          learnedAt: 'desc'
+        }
       }),
-      prisma.learnedWord.count({ where: {userId} })
+      prisma.learnedWord.count({ 
+        where: {
+          userId,
+          learnedAt: {
+            gte: start,
+            lte: end
+          }
+        },
+      }),
+      prisma.$queryRaw`
+    SELECT
+      DATE("learnedAt") as date,
+      COUNT(*)::int as count
+    FROM "LearnedWord"
+    WHERE
+      "userId" = ${userId}
+      AND "learnedAt" >= ${start}
+      AND "learnedAt" <= ${end}
+    GROUP BY DATE("learnedAt")
+    ORDER BY DATE("learnedAt")
+  `,
     ]);
 
     const totalPages = Math.ceil(total / pageSize);
@@ -256,7 +327,8 @@ router.get("/learned", auth.authenticate(), async (req, res) => {
         totalPages,
         hasNext: page < totalPages,
         hasPrev: page > 1
-      }
+      },
+      dailyCounts,
     }));
   } catch (err) {
     const errorResponse = Response.errorResponse(err);

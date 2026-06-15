@@ -1,18 +1,21 @@
 import { useState, useEffect } from 'react'
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Flex, Button, Box, Text, useToast } from '@chakra-ui/react';
 import useDailywordModalStore from '../../../store/modal/dailyWordModalStore';
+import useAuthStore from '../../../store/auth/authStore';
 import Icon from '../../common/Icon';
 import { speakText } from '../../../utils/speech';
 import { markWordAsLearned } from '../../../services/word';
+import { accentMap } from "../../../common/constants/accents";
 
 function DailyWordsModal() {
 
-    // store variables
+    // variables
     const { isOpen, close, words, fetchWords, isLoading, error } = useDailywordModalStore();
+    const { userData } = useAuthStore();
+    const accentChoice = accentMap[userData?.settings?.accentChoice] || 'en-US';
     const [isHoveredLeftArrow, setIsHoveredLeftArrow] = useState(false);
     const [isHoveredRightArrow, setIsHoveredRightArrow] = useState(false);
     const [activeWordIndex, setActiveWordIndex] = useState(0);
-
     // methods
     const handleNavigateWords = (type) => {
         if (type === "prev") {
@@ -62,7 +65,9 @@ function DailyWordsModal() {
                     >
                         {
                             isLoading ? <Text>Yükleniyor...</Text> :
-                                error ? <Text color="alert.danger">{error}</Text> : (
+                                error ? <Text color="alert.danger">{error}</Text> : 
+                                words.length === 0 ? <Text>Tebrikler!!! Kelime listendeki tüm kelimeleri öğrendin. Hemen yeni bir kelime ekle..</Text> :
+                                (
                                     <>
                                         <Box>
                                             <Flex
@@ -91,9 +96,9 @@ function DailyWordsModal() {
                                                     }}
                                                     role="button"
                                                     tabIndex={0}
-                                                    aria-label={`Sesli oku: ${"BOOK"}`}
-                                                    onClick={() => speakText("book", "en-US").catch(() => { })}
-                                                    onKeyPress={(e) => { if (e.key === 'Enter' || e.key === ' ') speakText("book", "en-US").catch(() => { }); }}
+                                                    aria-label={`Sesli oku: ${words?.[activeWordIndex]?.word}`}
+                                                    onClick={() => speakText(words?.[activeWordIndex]?.word, accentChoice).catch(() => { })}
+                                                    onKeyPress={(e) => { if (e.key === 'Enter' || e.key === ' ') speakText(words?.[activeWordIndex]?.word, accentChoice).catch(() => { }); }}
                                                 />
                                             </Flex>
                                         </Box>
@@ -108,28 +113,32 @@ function DailyWordsModal() {
                         }
                     </Flex>
                 </ModalBody>
-                <ModalFooter borderTop={"2px solid black"} marginTop={"24px"}>
-                    <Flex justifyContent={"center"} alignItems={"center"} gap={8}>
-                        <Icon
-                            onMouseEnter={() => setIsHoveredLeftArrow(true)}
-                            onMouseLeave={() => setIsHoveredLeftArrow(false)}
-                            icon="arrow-right" size="36px" cursor="pointer" style={{
-                                transform: isHoveredLeftArrow ? "rotate(180deg) scale(1.2)" : "rotate(180deg) scale(1)",
-                                transition: "0.2s",
-                            }}
-                            onClick={() => handleNavigateWords("prev")}
-                        />
-                        <Icon
-                            onMouseEnter={() => setIsHoveredRightArrow(true)}
-                            onMouseLeave={() => setIsHoveredRightArrow(false)}
-                            icon="arrow-right" size="36px" cursor="pointer" style={{
-                                transform: isHoveredRightArrow ? 'scale(1.2)' : "scale(1)",
-                                transition: "0.2s",
-                            }}
-                            onClick={() => handleNavigateWords("next")}
-                        />
-                    </Flex>
-                </ModalFooter>
+                {
+                    words.length ? (
+                        <ModalFooter borderTop={"2px solid black"} marginTop={"24px"}>
+                            <Flex justifyContent={"center"} alignItems={"center"} gap={8}>
+                                <Icon
+                                    onMouseEnter={() => setIsHoveredLeftArrow(true)}
+                                    onMouseLeave={() => setIsHoveredLeftArrow(false)}
+                                    icon="arrow-right" size="36px" cursor="pointer" style={{
+                                        transform: isHoveredLeftArrow ? "rotate(180deg) scale(1.2)" : "rotate(180deg) scale(1)",
+                                        transition: "0.2s",
+                                    }}
+                                    onClick={() => handleNavigateWords("prev")}
+                                />
+                                <Icon
+                                    onMouseEnter={() => setIsHoveredRightArrow(true)}
+                                    onMouseLeave={() => setIsHoveredRightArrow(false)}
+                                    icon="arrow-right" size="36px" cursor="pointer" style={{
+                                        transform: isHoveredRightArrow ? 'scale(1.2)' : "scale(1)",
+                                        transition: "0.2s",
+                                    }}
+                                    onClick={() => handleNavigateWords("next")}
+                                />
+                            </Flex>
+                        </ModalFooter>
+                    ) : null
+                }
             </ModalContent>
         </Modal>
     )
