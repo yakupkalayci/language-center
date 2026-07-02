@@ -135,10 +135,23 @@ model MediaWord {
 }
 
 model Settings {
-  id             String       @id @default(cuid())
-  dailyWordCount Int
-  accentChoice   AccentChoice @default(EN_US)
-  userId         String       @unique
-  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  showDailyLearningWordModal Boolean @default(true)
+  id                         String       @id @default(cuid())
+  dailyWordCount             Int
+  accentChoice               AccentChoice @default(EN_US)
+  userId                     String       @unique
+  user                       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  showDailyLearningWordModal Boolean      @default(true)
+}
+
+model ContactMessage {
+  id String @id @default(cuid())
+
+  name    String
+  email   String
+  subject String
+  message String
+
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
 }

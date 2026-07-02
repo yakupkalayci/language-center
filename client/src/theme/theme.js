@@ -22,6 +22,13 @@ const theme = extendTheme({
     Container: containerTheme,
     Button: buttonTheme,
     Heading: headingTheme,
+  },
+  styles: {
+    global: {
+      'html': {
+        scrollBehavior: 'smooth',
+      }
+    }
   }
 });
 

@@ -112,8 +112,6 @@ function AuthPage() {
     setFormType(location.state?.formType || "login");
   }, [location.state?.formType, reset]);
 
-  // session restoration is handled globally by AuthInitializer
-
   useEffect(() => {
     // navigate when we have user data (cookie-based auth)
     if (userData && userData.email) {

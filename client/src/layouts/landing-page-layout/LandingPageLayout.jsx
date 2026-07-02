@@ -8,7 +8,7 @@ function LandingPageLayout({ children }) {
   const isAuthPageActive = location.pathname === "/uyelik-islemleri";
 
   return (
-    <Flex flexDirection="column" justifyContent="space-between" minH="100vh">
+    <Flex flexDirection="column" justifyContent="space-between" minH="100vh" position={"relative"}>
       <Header />
       <Box
         as="main"
