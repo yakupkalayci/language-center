@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import Input from "../../form-elements/Input";
-import FormItem from "../../form-elements/formItem";
+import FormItem from "../../form-elements/FormItem";
 import Label from "../../form-elements/Label";
 import { FORM_RULES } from "../../../common/constants/form/formRules";
 import { changePassword } from "../../../services/auth";

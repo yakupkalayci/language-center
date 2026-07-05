@@ -12,7 +12,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import useAuthStore from "../../store/auth/authStore";
 import useDailywordModalStore from "../../store/modal/dailyWordModalStore";
-import FormItem from "../../components/form-elements/formItem";
+import FormItem from "../../components/form-elements/FormItem";
 import Input from "../../components/form-elements/Input";
 import { login, signup } from "../../services/auth";
 import { FORM_RULES } from "../../common/constants/form/formRules";

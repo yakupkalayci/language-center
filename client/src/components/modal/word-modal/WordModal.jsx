@@ -12,7 +12,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
-import FormItem from "../../form-elements/formItem";
+import FormItem from "../../form-elements/FormItem";
 import Input from "../../form-elements/Input";
 import Select from "../../form-elements/Select";
 import { WORD_TYPES } from '../../../common/constants/wordTypes';

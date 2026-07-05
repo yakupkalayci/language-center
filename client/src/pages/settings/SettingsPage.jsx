@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Container, Box, Flex, Text, Button, useToast } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import useAuthStore from "../../store/auth/authStore";
-import FormItem from "../../components/form-elements/formItem";
+import FormItem from "../../components/form-elements/FormItem";
 import Label from "../../components/form-elements/Label";
 import Input from "../../components/form-elements/Input";
 import Select from "../../components/form-elements/Select";

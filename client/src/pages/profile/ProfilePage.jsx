@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Container, Box, Heading, Flex, Button, Text, useToast } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import useAuthStore from "../../store/auth/authStore";
-import FormItem from "../../components/form-elements/formItem";
+import FormItem from "../../components/form-elements/FormItem";
 import Label from "../../components/form-elements/Label";
 import Input from "../../components/form-elements/Input";
 import ChangePasswordModal from "../../components/modal/change-password-modal/ChangePasswordModal";

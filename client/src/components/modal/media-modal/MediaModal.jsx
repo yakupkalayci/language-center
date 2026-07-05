@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, Flex, Button, Box, Text, useToast } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
-import FormItem from '../../form-elements/formItem';
+import FormItem from '../../form-elements/FormItem';
 import Input from '../../form-elements/Input';
 import { deleteMedia } from '../../../services/media';
 
