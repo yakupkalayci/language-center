@@ -37,8 +37,6 @@ function AuthPage() {
     try {
       const response = await login(data);
       const res = await response.data;
-      console.log("YKP", res);
-      
 
       if (res.status === 'success') {
         // server sets access_token cookie and refresh_token cookie; store only user data
