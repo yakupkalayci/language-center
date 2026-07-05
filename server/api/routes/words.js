@@ -332,4 +332,28 @@ router.get("/learned", auth.authenticate(), async (req, res) => {
   }
 });
 
+router.post("/:id/mark-unlearned", auth.authenticate(), async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const wordId = req.params.id;
+
+    await prisma.learnedWord.delete({
+      where: {
+        userId_wordId: {
+          userId,
+          wordId
+        }
+      }
+    });
+
+    res.json(Response.successResponse({
+      title: 'Kelime öğrenilmedi olarak işaretlendi',
+      message: 'Kelime başarıyla öğrenilmedi olarak işaretlendi.',
+    }));
+  } catch (err) {
+    const errorResponse = Response.errorResponse(err);
+    res.status(errorResponse.code).json(errorResponse);
+  }
+});
+
 module.exports = router;

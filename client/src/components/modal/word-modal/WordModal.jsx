@@ -29,6 +29,7 @@ function WordModal(props) {
     editData,
     handleEditWord,
     handleDelete,
+    handleUnlearnWord,
     isActionLoading,
   } = props;
   const defaultValues = {
@@ -56,6 +57,8 @@ function WordModal(props) {
       await handleEditWord(data, editData.id);
     } else if (modalType === "delete" && editData) {
       handleDelete(editData);
+    } else if (modalType === "unlearn" && editData) {
+      handleUnlearnWord(editData);
     }
     onClose();
   };
@@ -85,7 +88,7 @@ function WordModal(props) {
         <ModalHeader>
           {modalType === "add"
             ? "Kelime Ekle"
-            : modalType === "delete"
+            : modalType === "delete" || modalType === "unlearn"
             ? "Emin Misiniz?"
             : "Kelime Güncelle"}
         </ModalHeader>
@@ -94,6 +97,8 @@ function WordModal(props) {
           <Box as="form" onSubmit={handleSubmit(onSubmit)}>
             {modalType === "delete" ? (
               <Text marginBottom="16px">Seçtiğiniz kelime silinecek..</Text>
+            ) : modalType === 'unlearn' ? (
+              <Text marginBottom="16px">Seçtiğiniz kelime öğrenilmedi olarak işaretlenecek..</Text>
             ) : (
               <>
                 <FormItem errors={errors} itemName="word">

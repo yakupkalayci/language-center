@@ -180,6 +180,25 @@ function WordList(props) {
                         />
                       </Td>
                     )}
+                    {type === "page" && isLearnedWordsPage && (
+                      <Td textAlign="center">
+                        <Box
+                          as="i"
+                          className="icon-delete-three"
+                          color="#6B0504"
+                          cursor="pointer"
+                          fontWeight="600"
+                          fontSize="20px"
+                          marginRight="16px"
+                          display="inline-block"
+                          transition="all 0.1s ease"
+                          _hover={{
+                            transform: "scale(1.1)",
+                          }}
+                          onClick={() => openModal(item)}
+                        />
+                      </Td>
+                    )}
                   </Tr>
                 ))
               )

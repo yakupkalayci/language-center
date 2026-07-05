@@ -21,14 +21,13 @@ function Footer() {
             textWrap: "nowrap",
           }}
         >
-          Language Center
+          <Box as="a" href="/">
+            Language Center
+          </Box>
         </Heading>
         <Flex direction="column" alignItems="flex-end" marginLeft={{lg: 'auto'}} w={{lg: '50%', '2xl': '40%'}}>
           <Text color="secondary.white">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quos
-            similique dolorum quibusdam, labore nihil mollitia earum non facilis
-            cum quod perferendis possimus necessitatibus quidem dolorem
-            exercitationem aut assumenda doloribus neque?
+            <Text as="span" fontWeight={600}>My Language Center</Text> ile dil öğreniminizi dijital ortamda kolaylaştırın. Kendi hızınızda öğrenin, pratik yapın ve dil becerilerinizi geliştirin.
           </Text>
           <Flex
             justifyContent="space-between"
@@ -38,34 +37,25 @@ function Footer() {
             w="100%"
             gap="8px"
           >
-            <NavLink to="/hakkimizda">
+            <Box as="a" href="#specs" >
               <Text
                 as="span"
                 color="primary.gray"
                 _hover={{ color: "base.white" }}
               >
-                Hakkımızda
+                Özellikler
               </Text>
-            </NavLink>
-            <NavLink to="/nasil-calisir">
+            </Box>
+            <Box as="a" href="#howto">
               <Text
                 as="span"
                 color="primary.gray"
                 _hover={{ color: "base.white" }}
               >
-                Nasıl Çalışır?
+                Nasıl Kullanılır?
               </Text>
-            </NavLink>
-            <NavLink to="/sik-sorulan-sorular">
-              <Text
-                as="span"
-                color="primary.gray"
-                _hover={{ color: "base.white" }}
-              >
-                Sık Sorulan Sorular
-              </Text>
-            </NavLink>
-            <NavLink to="/iletisim">
+            </Box>
+            <Box as="a" href="#contact">
               <Text
                 as="span"
                 color="primary.gray"
@@ -73,7 +63,7 @@ function Footer() {
               >
                 İletişim
               </Text>
-            </NavLink>
+            </Box>
           </Flex>
         </Flex>
       </Flex>

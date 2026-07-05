@@ -115,7 +115,7 @@ function Header() {
             </Box>
           ))
         }
-        <Button width={"fit-content"} variant={"secondary"} borderRadius={"24px"} padding={"14px 22px"} fontWeight={"bold"} textColor={"base.white"}>
+        <Button as="a" href="/panel" width={"fit-content"} variant={"secondary"} borderRadius={"24px"} padding={"14px 22px"} fontWeight={"bold"} textColor={"base.white"}>
           Uygulamayı Aç
         </Button>
       </Flex>

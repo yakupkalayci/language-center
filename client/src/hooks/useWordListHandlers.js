@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useDisclosure, useToast } from "@chakra-ui/react";
-import { getWordByDateType, addWord, updateWord, deleteWord, getLearnedWords } from "../services/word";
+import { getWordByDateType, addWord, updateWord, deleteWord, getLearnedWords, markWordAsUnlearned } from "../services/word";
 
 function useWordListHandler(dateType, isLearnedWordsPage) {
   const headings = [
@@ -13,9 +13,6 @@ function useWordListHandler(dateType, isLearnedWordsPage) {
     "Sesli Dinle",
     "Aksiyonlar",
   ];
-  if(isLearnedWordsPage) {
-    headings.pop();
-  }
   const toast = useToast();
   const [tableData, setTableData] = useState([]);
   const [editData, setEditData] = useState(null);
@@ -57,6 +54,12 @@ function useWordListHandler(dateType, isLearnedWordsPage) {
     onOpen();
   };
 
+  const openUnlearnModal = (id) => {
+    setModalType("unlearn");
+    setEditData(id);
+    onOpen();
+  };
+
   const handleGetWords = async () => {
     try {
       setIsLoading(true);
@@ -89,6 +92,23 @@ function useWordListHandler(dateType, isLearnedWordsPage) {
       setTotalPages(pagination.totalPages);
     } catch (err) {
       console.log("handleGetLearnedWords fetch error:", err);
+      setError(true);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  const handleUnlearnWord = async () => {
+    try {
+      setIsLoading(true);
+      setError(false);
+      const res = await markWordAsUnlearned(editData.id);
+      if(res.data.status === 'success') {
+        onClose();
+        handleGetLearnedWords();
+      }
+    } catch (err) {
+      console.log("handleUnlearnWord fetch error:", err);
       setError(true);
     } finally {
       setIsLoading(false);
@@ -184,6 +204,7 @@ function useWordListHandler(dateType, isLearnedWordsPage) {
     openAddModal,
     openEditModal,
     openDeleteModal,
+    openUnlearnModal,
     handleEditWord,
     handleDelete,
     handleSaveWord,
@@ -203,7 +224,8 @@ function useWordListHandler(dateType, isLearnedWordsPage) {
     retry,
     dailyLearnedWordsData,
     selectedDate,
-    setSelectedDate
+    setSelectedDate,
+    handleUnlearnWord
   };
 }
 

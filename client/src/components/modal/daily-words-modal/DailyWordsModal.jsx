@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Flex, Button, Box, Text, useToast } from '@chakra-ui/react';
+import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Flex, Box, Text } from '@chakra-ui/react';
+import { useLocation } from 'react-router';
 import useDailywordModalStore from '../../../store/modal/dailyWordModalStore';
 import useAuthStore from '../../../store/auth/authStore';
 import Icon from '../../common/Icon';
@@ -13,9 +14,12 @@ function DailyWordsModal() {
     const { isOpen, close, words, fetchWords, isLoading, error } = useDailywordModalStore();
     const { userData } = useAuthStore();
     const accentChoice = accentMap[userData?.settings?.accentChoice] || 'en-US';
+    const location = useLocation();
+    const isModalOpen = isOpen && location.pathname !== '/';
     const [isHoveredLeftArrow, setIsHoveredLeftArrow] = useState(false);
     const [isHoveredRightArrow, setIsHoveredRightArrow] = useState(false);
     const [activeWordIndex, setActiveWordIndex] = useState(0);
+
     // methods
     const handleNavigateWords = (type) => {
         if (type === "prev") {
@@ -42,13 +46,13 @@ function DailyWordsModal() {
 
     // effects
     useEffect(() => {
-        if (isOpen) {
+        if (isOpen && isModalOpen) {
             fetchWords();
         }
-    }, [isOpen]);
+    }, [isOpen, isModalOpen]);
 
     return (
-        <Modal onClose={handleClose} isOpen={isOpen} isCentered size={"xl"}>
+        <Modal onClose={handleClose} isOpen={isOpen && isModalOpen} isCentered size={"xl"}>
             <ModalOverlay />
             <ModalContent bgColor={"primary.pink"} color="base.white">
                 <ModalHeader>

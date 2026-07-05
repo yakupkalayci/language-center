@@ -13,7 +13,8 @@ export const ENDPOINTS = {
         GETWORDLIST: "/words",
         GET_DAILY_LEARNING_WORDS: "/words/daily-learning",
         MARK_WORD_AS_LEARNED: "/words/daily-learning/:id/mark-learned",
-        GET_LEARNED_WORDS: "/words/learned"
+        GET_LEARNED_WORDS: "/words/learned",
+        MARK_WORD_AS_UNLEARNED: "/words/:id/mark-unlearned",
     },
     CONTACT: {
         SUBMIT_CONTACT_FORM: "/contact"

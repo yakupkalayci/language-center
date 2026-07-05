@@ -10,7 +10,7 @@ function HowTo() {
         },
         {
             index: '02',
-            desc: 'Hesabını oluşturduktan sonra, ilk kelimelerini ekleyerek kelime listelerini doldurabilirsin. Kelime listeni oluştururken dilersen Oxford 3000 kelime listesinden kelimeleri seçebilir veya kendi kelimelerini ekleyebilirsin.'
+            desc: 'Hesabını oluşturduktan sonra, ilk kelimelerini ekleyerek kelime listelerini doldurabilirsin.'
         },
         {
             index: '03',
@@ -40,7 +40,7 @@ function HowTo() {
                         <HowToStep key={step.index} index={step.index} desc={step.desc} isFirstItem={index === 0} isLastItem={index === steps.length - 1} />
                     ))
                 }
-                <Button variant={"secondary"} borderRadius={"24px"} padding={"14px 22px"} fontWeight={"bold"} textColor={"base.white"} marginTop={"16px"} _hover={{ opacity: 0.9 }}>
+                <Button as={"a"} href="/panel" variant={"secondary"} borderRadius={"24px"} padding={"14px 22px"} fontWeight={"bold"} textColor={"base.white"} marginTop={"16px"} _hover={{ opacity: 0.9 }}>
                     Uygulamayı Aç
                 </Button>
             </Box>

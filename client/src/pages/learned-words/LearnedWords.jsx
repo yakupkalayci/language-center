@@ -4,13 +4,17 @@ import PageHeader from "../../components/header/PageHeader";
 import WordList from "../../components/list/WordList";
 import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import Icon from "../../components/common/Icon";
+import WordModal from "../../components/modal/word-modal/WordModal";
 
 function LearnedWordsPage() {
     const {
         headings,
         tableData,
-        openEditModal,
-        openDeleteModal,
+        modalType,
+        openUnlearnModal,
+        isOpen,
+        onClose,
+        editData,
         isLoading,
         error,
         pageIndex,
@@ -20,6 +24,7 @@ function LearnedWordsPage() {
         dailyLearnedWordsData,
         selectedDate,
         setSelectedDate,
+        handleUnlearnWord,
     } = useWordListHandler(undefined, true);
 
     const formattedDailyLearnedWordsData = dailyLearnedWordsData.map(data => {
@@ -64,8 +69,7 @@ function LearnedWordsPage() {
                             type="page"
                             headings={headings}
                             data={tableData}
-                            openModal={openEditModal}
-                            openDeleteModal={openDeleteModal}
+                            openModal={openUnlearnModal}
                             loading={isLoading}
                             error={error}
                             pageIndex={pageIndex}
@@ -73,6 +77,13 @@ function LearnedWordsPage() {
                             onPageChange={onPageChange}
                             retry={retry}
                             isLearnedWordsPage={true}
+                        />
+                        <WordModal
+                            onClose={onClose}
+                            isOpen={isOpen}
+                            handleUnlearnWord={handleUnlearnWord}
+                            modalType={modalType}
+                            editData={editData}
                         />
                     </>
                 )

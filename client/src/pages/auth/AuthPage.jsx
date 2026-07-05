@@ -37,25 +37,31 @@ function AuthPage() {
     try {
       const response = await login(data);
       const res = await response.data;
+      console.log("YKP", res);
+      
 
       if (res.status === 'success') {
         // server sets access_token cookie and refresh_token cookie; store only user data
         setUserData(res.userData);
         // navigate immediately (also handled by userData effect)
         const from = location.state?.from || "/";
-        navigate(from, { replace: true });
+        navigate(from, { replace: true });        
         if (res.userData.settings.showDailyLearningWordModal) {
           open();
         }
       } else if (res.status === 'error') {
-        const error = new Error(res.error.description);
-        error.title = res.error.title;
-        error.message = res.error.description;
+        const error = new Error(res.data.error.description);
+        error.title = res.data.error.title;
+        error.message = res.data.error.description;
         throw error;
       }
     } catch (err) {
       console.log("Handle login error:", err);
-      throw err;
+      toast({
+        title: err.response.data.error?.title || "Hata",
+        description: err.response.data.error?.description || "Bir hata oluştu.",
+        status: "error",
+      }); 
     }
   };
 
@@ -75,35 +81,19 @@ function AuthPage() {
       }
     } catch(err) {
         console.log("Handle register error:", err);
-        throw err;
+        toast({
+        title: err.response.data.error?.title || "Hata",
+        description: err.response.data.error?.description || "Bir hata oluştu.",
+        status: "error",
+      }); 
     }
   };
 
   const onSubmit = (data) => {
     if (formType === "login") {
-      toast.promise(handleLogin(data), {
-        loading: {title: "Yükleniyor..", description: "İşleminiz gerçekleştiriliyor"},
-        success: (res) => ({
-          title: "Başarılı",
-          description: "Uygulamaya başarıyla giriş yaptın.",
-        }),
-        error: (err) => ({
-          title: err.title || "Hata",
-          description: err.message || "Bir hata oluştu.",
-        }),
-      })
+      handleLogin(data);
     } else if (formType === "register") {
-      toast.promise(handleRegister(data), {
-        loading: { title: "Yükleniyor..", description: "İşleminiz gerçekleştiriliyor" },
-        success: (res) => ({
-          title: "Başarılı",
-          description: "Giriş yapabilirsin",
-        }),
-        error: (err) => ({
-          title: err.title || "Hata",
-          description: err.message || "Bir hata oluştu.",
-        }),
-      });
+      handleRegister(data);
     }
   };
 

@@ -9,6 +9,7 @@ function Input(props) {
   // states
   const [inputType, setInputType] = useState(type);
   const [passwordToggleIcon, setPasswordToggleIcon] = useState('eye');
+  const registration = register?.(name, validationSchema);
 
   // methods
   const togglePasswordIcon = () => {
@@ -19,7 +20,7 @@ function Input(props) {
   return (
     <Box position="relative">
       <ChakraInput
-        {...register?.(name, validationSchema)}
+        {...registration}
         id={name}
         placeholder={placeholder}
         type={inputType}
@@ -32,7 +33,10 @@ function Input(props) {
         }}
         min={min}
         value={value}
-        onChange={onChange}
+        onChange={(e) => {
+          registration?.onChange(e);
+          onChange?.(e);
+        }}
         {...customStyles}
       />
       {

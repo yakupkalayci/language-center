@@ -38,6 +38,11 @@ export async function markWordAsLearned(wordId) {
     return api('POST', url);
 }
 
+export async function markWordAsUnlearned(wordId) {
+    const url = ENDPOINTS.WORDS.MARK_WORD_AS_UNLEARNED.replace(':id', wordId);
+    return api('POST', url);
+}
+
 export async function getLearnedWords(pageIndex, pageSize, startDate, endDate) {
     const url = ENDPOINTS.WORDS.GET_LEARNED_WORDS + `?pageIndex=${pageIndex}&pageSize=${pageSize}&startDate=${startDate}&endDate=${endDate}`;
     return api('GET', url);
