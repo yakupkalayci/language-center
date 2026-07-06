@@ -3,7 +3,7 @@ import useWordListHandler from "../../hooks/useWordListHandlers";
 import PageHeader from "../../components/header/PageHeader";
 import WordList from "../../components/list/WordList";
 import WordModal from "../../components/modal/word-modal/WordModal";
-import GameModal from "../../components/modal/game-modal/GameModal";
+import WordMatchingGameModal from "../../components/modal/game-modals/word-matching-game/WordMatchingGameModal";
 
 function WordListDay() {
 
@@ -60,7 +60,7 @@ function WordListDay() {
       />
       {
         showGameModal && (
-          <GameModal
+          <WordMatchingGameModal
             isOpen={isOpenGameModal}
             onClose={onCloseGameModal}
             words={tableData.words}

@@ -12,6 +12,7 @@ const MediaList = lazy(() => import("../pages/media/MediaList"));
 const MediaDetail = lazy(() => import("../pages/media/MediaDetail"));
 const SettingsPage = lazy(() => import("../pages/settings/SettingsPage"));
 const LearnedWordsPage = lazy(() => import("../pages/learned-words/LearnedWords"));
+const WordGamesPage = lazy(() => import("../pages/word-games/WordGamesPage"));
 
 export const routes = [
   {
@@ -107,6 +108,14 @@ export const routes = [
     exact: true,
     path: "/ogrenilen-kelimeler",
     component: LearnedWordsPage,
+    isPrivate: true,
+    defaultLayout: true,
+  },
+  {
+    title: "Kelime Oyunları",
+    exact: true,
+    path: "/kelime-oyunlari",
+    component: WordGamesPage,
     isPrivate: true,
     defaultLayout: true,
   },

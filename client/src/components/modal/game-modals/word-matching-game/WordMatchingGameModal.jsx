@@ -11,13 +11,13 @@ import {
   Button,
   useToast
 } from "@chakra-ui/react";
-import Input from "../../form-elements/Input";
-import Label from "../../form-elements/Label";
+import Input from "../../../form-elements/Input";
+import Label from "../../../form-elements/Label";
 import WordContainer from "./_partials/WordContainer";
 import DescContainer from "./_partials/DescContainer";
-import { getRandomItemsFromArr } from "../../../utils/getRandomItemsFromArr";
+import { getRandomItemsFromArr } from "../../../../utils/getRandomItemsFromArr";
 
-function GameModal(props) {
+function WordMatchingGameModal(props) {
   // destruct props
   const { onClose, isOpen, words } = props;
 
@@ -205,4 +205,4 @@ function GameModal(props) {
   );
 }
 
-export default GameModal;
+export default WordMatchingGameModal;
