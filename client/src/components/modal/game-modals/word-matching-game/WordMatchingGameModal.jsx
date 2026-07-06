@@ -68,6 +68,7 @@ function WordMatchingGameModal(props) {
 
   const handleRestartGame = () => {
     setStep(0);
+    setCompletedCards([]);
   }
 
   const handleWordCardClick = (id, desc) => {
