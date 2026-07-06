@@ -106,10 +106,12 @@ function Header() {
             color="secondary.white"
             fontSize={{ base: "24px", lg: "36px" }}
           >
-            <Image
-              src={"/logo-white.png"}
-              height={"120px"}
-            />
+            <Box as="a" href="/">
+              <Image
+                src={"/logo-white.png"}
+                height={"120px"}
+              />
+            </Box>
           </Heading>
         {userData && userData.email && (
           <Menu autoSelect={false}>
