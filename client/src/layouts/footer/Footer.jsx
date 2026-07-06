@@ -1,4 +1,4 @@
-import { Box, Heading, Flex, Text } from "@chakra-ui/react";
+import { Box, Heading, Flex, Text, Image } from "@chakra-ui/react";
 import { HashLink } from 'react-router-hash-link';
 
 function Footer() {
@@ -22,7 +22,10 @@ function Footer() {
           }}
         >
           <Box as="a" href="/">
-            Language Center
+            <Image 
+              src="/logo-white.png"
+              height={"120px"}
+            />
           </Box>
         </Heading>
         <Flex direction="column" alignItems="flex-end" marginLeft={{lg: 'auto'}} w={{lg: '50%', '2xl': '40%'}}>

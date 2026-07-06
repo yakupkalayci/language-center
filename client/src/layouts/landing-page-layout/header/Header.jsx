@@ -5,6 +5,7 @@ import {
   Heading,
   Text,
   Button,
+  Image,
 } from "@chakra-ui/react";
 import { NavLink } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
@@ -42,13 +43,18 @@ function Header() {
         direction={"row"}
         justifyContent="space-between"
         paddingTop={{base: '20px', md: "16px"}}
-        paddingBottom={{base: '22px', md: "72px"}}
+        paddingBottom="22px"
         gap={"12px"}
       >
         <Heading
           as="h1"
         >
-          <NavLink to={"/"}>Language</NavLink>
+          <NavLink to={"/"}>
+            <Image
+              src={"/logo-colored.png"}
+              height={"120px"}
+            />
+          </NavLink>
         </Heading>
 
         {/* Desktop Nav */}

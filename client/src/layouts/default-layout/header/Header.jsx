@@ -11,6 +11,7 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
+  Image,
 } from "@chakra-ui/react";
 import { useLocation, useNavigate, NavLink } from "react-router-dom";
 import useAuthStore from "../../../store/auth/authStore";
@@ -105,7 +106,10 @@ function Header() {
             color="secondary.white"
             fontSize={{ base: "24px", lg: "36px" }}
           >
-            <NavLink to={"/"}>Language Center</NavLink>
+            <Image
+              src={"/logo-white.png"}
+              height={"120px"}
+            />
           </Heading>
         {userData && userData.email && (
           <Menu autoSelect={false}>
