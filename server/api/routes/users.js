@@ -145,6 +145,12 @@ router.post("/login", limiter(10), async (req, res) => {
       },
     });
 
+    const wordCount = await prisma.word.count({
+      where: {
+        userId: user.id,
+      }
+    });
+
     const dailySessionWordCount = await prisma.dailySession.count({
       where: {
         userId: user.id,
@@ -157,7 +163,7 @@ router.post("/login", limiter(10), async (req, res) => {
       if(learnedWordCount !== dailySessionWordCount) {
         showDailyLearningWordModal = true;
       }
-    } else {
+    } else if(wordCount) {
       showDailyLearningWordModal = true;
     }
 
@@ -187,9 +193,19 @@ router.post("/login", limiter(10), async (req, res) => {
   await prisma.refreshToken.create({ data: { token: refreshToken, userId: user.id, expiresAt } });
 
   // send access token in httpOnly cookie and return user data
-  res.cookie('access_token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', maxAge: config.JWT.EXPIRE_TIME * 1000 });
+  res.cookie('access_token', token, { 
+    httpOnly: true, 
+    secure: process.env.NODE_ENV === 'production', 
+    sameSite: 'lax', 
+    maxAge: config.JWT.EXPIRE_TIME * 1000 
+  });
   // set refresh cookie maxAge to refresh expiry so browser persists it correctly
-  res.cookie('refresh_token', refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', maxAge: config.JWT.REFRESH_EXPIRE_TIME * 1000 });
+  res.cookie('refresh_token', refreshToken, { 
+    httpOnly: true, 
+    secure: process.env.NODE_ENV === 'production', 
+    sameSite: 'lax', 
+    maxAge: config.JWT.REFRESH_EXPIRE_TIME * 1000 
+  });
 
     res.json({ status: "success", userData: userData });
   } catch (err) {

@@ -13,7 +13,7 @@ function SideBar() {
     {
       id: 0,
       label: "Anasayfa",
-      href: "/",
+      href: "/panel",
       icon: "home",
     },
     {

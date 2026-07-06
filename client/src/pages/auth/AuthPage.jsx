@@ -42,7 +42,7 @@ function AuthPage() {
         // server sets access_token cookie and refresh_token cookie; store only user data
         setUserData(res.userData);
         // navigate immediately (also handled by userData effect)
-        const from = location.state?.from || "/";
+        const from = location.state?.from || "/panel";
         navigate(from, { replace: true });        
         if (res.userData.settings.showDailyLearningWordModal) {
           open();

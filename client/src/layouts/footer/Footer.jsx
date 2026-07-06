@@ -1,5 +1,5 @@
 import { Box, Heading, Flex, Text } from "@chakra-ui/react";
-import { NavLink } from "react-router";
+import { HashLink } from 'react-router-hash-link';
 
 function Footer() {
   return (
@@ -37,7 +37,7 @@ function Footer() {
             w="100%"
             gap="8px"
           >
-            <Box as="a" href="#specs" >
+            <HashLink smooth to="/#specs" >
               <Text
                 as="span"
                 color="primary.gray"
@@ -45,8 +45,8 @@ function Footer() {
               >
                 Özellikler
               </Text>
-            </Box>
-            <Box as="a" href="#howto">
+            </HashLink>
+            <HashLink smooth to="/#howto">
               <Text
                 as="span"
                 color="primary.gray"
@@ -54,8 +54,8 @@ function Footer() {
               >
                 Nasıl Kullanılır?
               </Text>
-            </Box>
-            <Box as="a" href="#contact">
+            </HashLink>
+            <HashLink smooth to="/#contact">
               <Text
                 as="span"
                 color="primary.gray"
@@ -63,7 +63,7 @@ function Footer() {
               >
                 İletişim
               </Text>
-            </Box>
+            </HashLink>
           </Flex>
         </Flex>
       </Flex>

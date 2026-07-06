@@ -8,18 +8,26 @@ require('dotenv').config();
 
 var app = express();
 
+// CORS
+const allowedOrigins = process.env.CORS_ORIGINS.split(",");
+
+app.use(cors({
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+}));
+
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-const allowedOrigins = [
-  "http://mylanguagecenter.tech",
-  "https://mylanguagecenter.tech",
-];
-app.use(cors({
-    origin: allowedOrigins,
-    credentials: true,
-}));
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api', require('./routes/index'));

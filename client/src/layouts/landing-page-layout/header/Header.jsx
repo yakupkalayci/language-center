@@ -7,6 +7,7 @@ import {
   Button,
 } from "@chakra-ui/react";
 import { NavLink } from "react-router-dom";
+import { HashLink } from "react-router-hash-link";
 
 function Header() {
 
@@ -67,14 +68,14 @@ function Header() {
         >
           {
             navLinks.map(link => (
-              <Box key={link.href} as="a" href={link.href}>
+              <HashLink key={link.href} smooth to={link.href}>
                 <Text _hover={{
                   color: "primary.pink",
                   fontWeight: 'bold'
                 }}>
                   {link.label}
                 </Text>
-              </Box>
+              </HashLink>
             ))
           }
         </Flex>
@@ -108,11 +109,11 @@ function Header() {
       >
         {
           navLinks.map(link => (
-            <Box key={link.href} as="a" href={link.href}>
+            <HashLink key={link.href} smooth to={link.href}>
               <Text borderBottom={"0.5px solid"} borderColor={"primary.pink"} paddingBottom={2}>
                 {link.label}
               </Text>
-            </Box>
+            </HashLink>
           ))
         }
         <Button as="a" href="/panel" width={"fit-content"} variant={"secondary"} borderRadius={"24px"} padding={"14px 22px"} fontWeight={"bold"} textColor={"base.white"}>
