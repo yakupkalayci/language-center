@@ -23,5 +23,9 @@ module.exports = {
     ACCENT_CHOICES: {
         US: 'EN_US',
         GB: 'EN_GB'
+    },
+    ROLES: {
+        USER: 'USER',
+        ADMİN: 'ADMİN'
     }
 }

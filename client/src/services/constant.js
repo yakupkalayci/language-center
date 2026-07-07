@@ -1,6 +1,6 @@
 export const ENDPOINTS = {
     AUTH: {
-        LOGIN: "/users/login",
+        LOGIN: "/admin/login",
         REGISTER: "/users/register",
         DELETE_ACCOUNT: "/users/delete",
         UPDATE_PROFILE: "/users/update-profile",
