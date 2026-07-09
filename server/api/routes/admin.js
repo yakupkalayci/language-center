@@ -39,13 +39,14 @@ router.post("/login", limiter(10), async (req, res) => {
 
         const isAdminUser = user.role.includes(Enum.ROLES.ADMİN);
 
-        if (!user || !isAdminUser) {
-            throw new CustomError(
-                Enum.HTTPS_CODES.BAD_REQUEST,
-                "Hatalı istek",
-                "Eposta veya parola hatalı."
-            );
-        }
+        // TODO
+        // if (!user || !isAdminUser) {
+        //     throw new CustomError(
+        //         Enum.HTTPS_CODES.BAD_REQUEST,
+        //         "Hatalı istek",
+        //         "Eposta veya parola hatalı."
+        //     );
+        // }
         const isCorrectPassword = await bcrypt.compare(password, user.password);
 
         if (!isCorrectPassword) {
@@ -89,13 +90,47 @@ router.post("/login", limiter(10), async (req, res) => {
             maxAge: config.JWT.REFRESH_EXPIRE_TIME * 1000
         });
 
-        res.json({ status: "success", userData: userData });
+        res.json({ status: "success", userData: userData, accessToken: token, refreshToken: refreshToken });
     } catch (err) {
         if (!res.headersSent) {
             let errorResponse = Response.errorResponse(err);
             res.status(errorResponse.code).json(errorResponse);
         }
     }
+});
+
+router.post('/logout', limiter(), async (req, res) => {
+  try {
+    const refreshToken = req.cookies?.refresh_token || req.body?.refresh_token;
+    if (refreshToken) {
+      await prisma.refreshToken.updateMany({ where: { token: refreshToken }, data: { revoked: true } });
+    } else if (req.user && req.user.id) {
+      await prisma.refreshToken.updateMany({ where: { userId: req.user.id }, data: { revoked: true } });
+    }
+    // clear cookies regardless
+    res.clearCookie('access_token');
+    res.clearCookie('refresh_token');
+    res.json(Response.successResponse({ title: 'Logged out' }));
+  } catch (err) {
+    const errorResponse = Response.errorResponse(err);
+    res.status(errorResponse.code).json(errorResponse);
+  }
+});
+
+router.get('/me', auth.authenticate(), async (req, res) => {
+  try {
+    if(req.user.id) {
+        const { password, ...userData } = req.user;
+        res.json(Response.successResponse({ authenticated: true, user: userData}));
+    } else {
+        return res.status(401).json({
+            authenticated: false,
+        });
+    }
+  } catch (err) {
+    const errorResponse = Response.errorResponse(err);
+    res.status(errorResponse.code).json(errorResponse);
+  }
 });
 
 module.exports = router;
