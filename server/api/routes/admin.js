@@ -119,7 +119,7 @@ router.post('/logout', limiter(), async (req, res) => {
 
 router.get('/me', auth.authenticate(), async (req, res) => {
   try {
-    if(req.user.id) {
+    if(req.user?.id) {
         const { password, ...userData } = req.user;
         res.json(Response.successResponse({ authenticated: true, user: userData}));
     } else {
@@ -127,6 +127,47 @@ router.get('/me', auth.authenticate(), async (req, res) => {
             authenticated: false,
         });
     }
+  } catch (err) {
+    const errorResponse = Response.errorResponse(err);
+    res.status(errorResponse.code).json(errorResponse);
+  }
+});
+
+router.get("/users", auth.authenticate(), async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const page = Number(req.query.pageIndex) || 1;
+    const pageSize = Number(req.query.pageSize) || 10;
+
+    const skip = (page - 1) * pageSize;
+    
+    const [users, total] = await Promise.all([
+      prisma.user.findMany({
+        skip,
+        take: pageSize,
+        orderBy: {
+          createdAt: 'desc'
+        },
+        omit: {
+            password: true,
+        },
+      }),
+      prisma.user.count()
+    ]);
+
+    const totalPages = Math.ceil(total / pageSize);
+
+    res.json(Response.successResponse({
+      users,
+      pagination: {
+        total,
+        page,
+        pageSize,
+        totalPages,
+        hasNext: page < totalPages,
+        hasPrev: page > 1
+      }
+    }));
   } catch (err) {
     const errorResponse = Response.errorResponse(err);
     res.status(errorResponse.code).json(errorResponse);

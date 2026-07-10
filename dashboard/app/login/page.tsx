@@ -1,6 +1,6 @@
 'use client';
-import LoginForm from "@/components/form/LoginForm";
-import Container from "@/components/layout/Container";
+import LoginForm from "@/app/components/form/LoginForm";
+import Container from "@/app/components/layout/Container";
 
 function LoginPage() {
   return (
