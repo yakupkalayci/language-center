@@ -10,8 +10,6 @@ export interface User {
     updatedAt: string;
 }
 
-
-
 export interface Users {
     users: User[];
     pagination: Pagination;

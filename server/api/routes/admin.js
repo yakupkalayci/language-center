@@ -216,4 +216,41 @@ router.put("/users/toggle-admin-role/:userId", auth.authenticate(), async (req, 
   }
 });
 
+router.get("/feedbacks", auth.authenticate(), async (req, res) => {
+  try {
+    const page = Number(req.query.pageIndex) || 1;
+    const pageSize = Number(req.query.pageSize) || 10;
+
+    const skip = (page - 1) * pageSize;
+
+    const [feedbacks, total] = await Promise.all([
+      prisma.contactMessage.findMany({
+        skip,
+        take: pageSize,
+        orderBy: {
+          createdAt: 'desc'
+        },
+      }),
+      prisma.user.count()
+    ]);
+
+    const totalPages = Math.ceil(total / pageSize);
+
+    res.json(Response.successResponse({
+      feedbacks,
+      pagination: {
+        total,
+        page,
+        pageSize,
+        totalPages,
+        hasNext: page < totalPages,
+        hasPrev: page > 1
+      }
+    }));
+  } catch (err) {
+    const errorResponse = Response.errorResponse(err);
+    res.status(errorResponse.code).json(errorResponse);
+  }
+});
+
 module.exports = router;
