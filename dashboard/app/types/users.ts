@@ -1,4 +1,4 @@
-import { Pagination } from "./Pagination";
+import { Pagination } from "./pagination";
 
 export interface User {
     id: string;

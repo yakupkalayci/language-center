@@ -1,8 +1,8 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
-const is = require("is_js");
 const config = require("../config");
 const prisma = require('../lib/prismaClient');
+const { Role } = require('@prisma/client');
 const Enum = require("../config/Enum");
 const jwt = require("jwt-simple");
 const rateLimit = require("express-rate-limit");
@@ -39,14 +39,13 @@ router.post("/login", limiter(10), async (req, res) => {
 
         const isAdminUser = user.role.includes(Enum.ROLES.ADMİN);
 
-        // TODO
-        // if (!user || !isAdminUser) {
-        //     throw new CustomError(
-        //         Enum.HTTPS_CODES.BAD_REQUEST,
-        //         "Hatalı istek",
-        //         "Eposta veya parola hatalı."
-        //     );
-        // }
+        if (!user || !isAdminUser) {
+            throw new CustomError(
+                Enum.HTTPS_CODES.BAD_REQUEST,
+                "Hatalı istek",
+                "Eposta veya parola hatalı."
+            );
+        }
         const isCorrectPassword = await bcrypt.compare(password, user.password);
 
         if (!isCorrectPassword) {
@@ -135,7 +134,6 @@ router.get('/me', auth.authenticate(), async (req, res) => {
 
 router.get("/users", auth.authenticate(), async (req, res) => {
   try {
-    const userId = req.user.id;
     const page = Number(req.query.pageIndex) || 1;
     const pageSize = Number(req.query.pageSize) || 10;
 
@@ -169,6 +167,50 @@ router.get("/users", auth.authenticate(), async (req, res) => {
       }
     }));
   } catch (err) {
+    const errorResponse = Response.errorResponse(err);
+    res.status(errorResponse.code).json(errorResponse);
+  }
+});
+
+router.get("/users/delete-user/:userId", auth.authenticate(), async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    await prisma.user.delete({
+      where: { id: userId }
+    });
+
+    res.json(Response.successResponse());
+  } catch(err) {
+    const errorResponse = Response.errorResponse(err);
+    res.status(errorResponse.code).json(errorResponse);
+  }
+});
+
+router.put("/users/toggle-admin-role/:userId", auth.authenticate(), async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId
+      },
+      select: { role: true }
+    });
+
+    if(!user) {
+      throw new Error("User not found.");
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        role: user.role.includes(Role.ADMIN) ? [Role.USER] : [Role.USER, Role.ADMIN]
+      }
+    });
+
+    res.json(Response.successResponse(updatedUser));
+  } catch(err) {
     const errorResponse = Response.errorResponse(err);
     res.status(errorResponse.code).json(errorResponse);
   }

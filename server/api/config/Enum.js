@@ -26,6 +26,6 @@ module.exports = {
     },
     ROLES: {
         USER: 'USER',
-        ADMİN: 'ADMİN'
+        ADMİN: 'ADMIN'
     }
 }

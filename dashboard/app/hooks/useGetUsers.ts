@@ -11,6 +11,7 @@ export function useGetUsers() {
     const [data, setData] = useState<Users>();
     const [pageIndex, setPageIndex] = useState(0);
     const [pageSize, setPageSize] = useState(10);
+    const [refreshKey, setRefreshKey] = useState(0);
 
     const handleGetUsers = async () => {
         try {
@@ -37,7 +38,7 @@ export function useGetUsers() {
 
     useEffect(() => {
         handleGetUsers();
-    }, [pageIndex, pageSize]);
+    }, [pageIndex, pageSize, refreshKey]);
 
     return {
         isLoading,
@@ -46,5 +47,6 @@ export function useGetUsers() {
         pageIndex,
         pageSize,
         setPageIndex,
+        setRefreshKey,
     }
 }

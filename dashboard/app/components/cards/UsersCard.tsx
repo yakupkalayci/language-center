@@ -1,10 +1,64 @@
 'use client';
+import { useState } from "react";
 import Link from "next/link";
 import { useGetUsers } from "@/app/hooks/useGetUsers";
 import Pagination from "../pagination/Pagination";
+import { ApiResponse } from "../../types/api";
 
 function UsersCard({ type }: { type: 'page' | 'card' }) {
-  const { isLoading, error, data, pageIndex, setPageIndex } = useGetUsers();
+  const { isLoading, error, data, pageIndex, setPageIndex, setRefreshKey } = useGetUsers();
+
+  const [deletingUserId, setDeletingUserId] = useState("");
+  const [isDeletingUser, setIsDeletingUser] = useState(false);
+
+  const [adminToggleUserId, setAdminToggleUserId] = useState("");
+  const [isAdminToggling, setIsAdminToggling] = useState(false);
+
+  const handleDeleteUser = async (id: string) => {
+    try {
+      setIsDeletingUser(true);
+      setDeletingUserId(id);
+
+      const response = await fetch(`/api/delete-user?userId=${id}`);
+      if (!response.ok) {
+        throw new Error("Bilinmeyen bir hata oluştu.");
+      }
+
+      const res = await response.json() as ApiResponse<{}>;
+      if (res.status === 'success') {
+        setRefreshKey(prev => prev + 1);
+      }
+
+    } catch (err) {
+      console.log("handleDeleteUser fetch error:", err);
+    } finally {
+      setIsDeletingUser(false);
+      setDeletingUserId("");
+    }
+  }
+
+  const handleToggleAdminRole = async (id: string) => {
+    try {
+      setIsAdminToggling(true);
+      setAdminToggleUserId(id);
+
+      const response = await fetch(`/api/toggle-admin-role?userId=${id}`, { method: 'PUT' });
+      if (!response.ok) {
+        throw new Error("Bilinmeyen bir hata oluştu.");
+      }
+
+      const res = await response.json() as ApiResponse<{}>;
+      if (res.status === 'success') {
+        setRefreshKey(prev => prev + 1);
+      }
+
+    } catch (err) {
+      console.log("handleToggleAdminRole fetch error:", err);
+    } finally {
+      setIsAdminToggling(false);
+      setAdminToggleUserId("");
+    }
+  }
 
   return (
     <div className='col-span-24 h-full rounded-lg bg-white p-6 shadow-[0px_8px_24px_rgba(149,157,165,0.2)] transition-all duration-300 mt-6'>
@@ -58,10 +112,21 @@ function UsersCard({ type }: { type: 'page' | 'card' }) {
                             </td>
                             <td className="border-b border-[#A0AEC0] pb-4">
                               <div className="flex justify-center items-center gap-2">
-                                <button className="bg-blue-500 text-white px-4 rounded-md cursor-pointer">
-                                  {item.role.includes("ADMIN") ? 'Adminlikten çıkar' : 'Admin Yap'}
+                                <button
+                                  onClick={() => handleToggleAdminRole(item.id)}
+                                  disabled={isAdminToggling && (adminToggleUserId === item.id)}
+                                  className="bg-blue-500 text-white px-4 rounded-md cursor-pointer">
+                                  {
+                                    isAdminToggling ? 'İşleniyor..' :
+                                      item.role.includes("ADMIN") ? 'Adminlikten çıkar' : 'Admin Yap'
+                                  }
                                 </button>
-                                <button className="bg-red-500 text-white px-4 rounded-md cursor-pointer">Sil</button>
+                                <button
+                                  onClick={() => handleDeleteUser(item.id)}
+                                  disabled={isDeletingUser && (deletingUserId === item.id)}
+                                  className="bg-red-500 text-white px-4 rounded-md cursor-pointer">
+                                  {(isDeletingUser && (deletingUserId === item.id)) ? 'Siliniyor' : 'Sil'}
+                                </button>
                               </div>
                             </td>
                           </>
