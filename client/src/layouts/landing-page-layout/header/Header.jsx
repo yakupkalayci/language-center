@@ -52,7 +52,7 @@ function Header() {
           <NavLink to={"/"}>
             <Image
               src={"/logo-colored.png"}
-              height={"120px"}
+              height={{base: '60px', md: "120px"}}
             />
           </NavLink>
         </Heading>

@@ -109,7 +109,7 @@ function Header() {
             <Box as="a" href="/">
               <Image
                 src={"/logo-white.png"}
-                height={"120px"}
+                height={{base: '60px', md: "120px"}}
               />
             </Box>
           </Heading>
